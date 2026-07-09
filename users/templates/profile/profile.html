@@ -1,0 +1,123 @@
+{% extends "base.html" %}
+
+{% block title %}
+Profile
+{% endblock %}
+
+{% block content %}
+
+<style>
+
+.profile-card{
+    width:600px;
+    margin:40px auto;
+    background:#fff;
+    padding:30px;
+    border-radius:10px;
+    box-shadow:0 0 10px rgba(0,0,0,.15);
+}
+
+.profile-card h2{
+    text-align:center;
+    margin-bottom:25px;
+}
+
+.info{
+    margin:15px 0;
+    font-size:17px;
+}
+
+.actions{
+    margin-top:30px;
+}
+
+.actions a{
+    display:inline-block;
+    padding:10px 20px;
+    text-decoration:none;
+    background:#007bff;
+    color:white;
+    border-radius:5px;
+    margin-right:10px;
+}
+
+</style>
+
+<div class="profile-card">
+
+    <h2>User Profile</h2>
+
+    <div class="info">
+        <strong>Username:</strong>
+        {{ request.user.username }}
+    </div>
+
+    <div class="info">
+        <strong>Phone:</strong>
+        {{ request.user.phone }}
+    </div>
+
+    {% if subscription %}
+
+        <div class="info">
+            <strong>Subscription:</strong>
+            {{ subscription.subscription.name }}
+        </div>
+
+        <div class="info">
+            <strong>Remaining Days:</strong>
+            {{ subscription.remaining_days }}
+        </div>
+
+    {% else %}
+
+        <div class="info">
+            <strong>Subscription:</strong>
+            No Active Subscription
+        </div>
+
+    {% endif %}
+
+    <div class="actions">
+
+
+        <a href="{% url 'users:change-password' %}">
+            Change Password
+        </a>
+
+    </div>
+
+    {% for post in favorits %}
+       <div class="card">
+    {% if post.image %}
+        <img src="{{ post.image.url }}" alt="{{ post.title }}" class="post-image">
+    {% endif %}
+
+    <h2>{{ post.title }}</h2>
+
+    <p>
+        {{ post.content|truncatewords:20 }}
+    </p>
+
+    <p>
+        <strong>Author:</strong> {{ post.author.username }}
+    </p>
+
+    <p>
+        <strong>Category:</strong> {{ post.category.name }}
+    </p>
+
+    <a href="{% url 'posts:detail' post.id %}">
+        View Post
+    </a>
+</div>
+
+{% empty %}
+<div class="card">
+    <h3>No favorite posts yet.</h3>
+</div>
+    {% endfor %}
+
+</div>
+
+{% endblock %}

@@ -1,0 +1,9 @@
+.venv
+venv
+.env
+env
+
+logs
+media
+db.sqlite3
+check-list

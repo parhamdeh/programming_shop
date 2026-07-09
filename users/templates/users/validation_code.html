@@ -1,0 +1,35 @@
+
+{% extends "base.html" %}
+
+{% block title %}
+Verify OTP
+{% endblock %}
+
+{% block content %}
+
+<div class="card">
+
+    <h2 style="margin-bottom:20px;">
+        Verify Your Account
+    </h2>
+
+    <p style="margin-bottom:20px;color:gray;">
+        Enter the 6-digit verification code.
+    </p>
+
+    <form method="post">
+
+        {% csrf_token %}
+
+        {{ form.as_p }}
+
+        <button type="submit">
+            Verify
+        </button>
+
+    </form>
+
+</div>
+
+{% endblock %}
+

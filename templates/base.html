@@ -1,0 +1,131 @@
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>
+        {% block title %}
+            Django App
+        {% endblock %}
+    </title>
+
+    <style>
+        *{
+            margin:0;
+            padding:0;
+            box-sizing:border-box;
+        }
+
+        body{
+            font-family:Arial,sans-serif;
+            background:#f5f7fb;
+        }
+
+        nav{
+            background:#2563eb;
+            padding:16px 40px;
+        }
+
+        nav a{
+            color:white;
+            text-decoration:none;
+            margin-right:20px;
+            font-weight:600;
+        }
+
+        .container{
+            max-width:1000px;
+            margin:30px auto;
+            padding:0 20px;
+        }
+
+        .card{
+            background:white;
+            border-radius:12px;
+            padding:24px;
+            box-shadow:0 2px 10px rgba(0,0,0,.08);
+        }
+
+        .message{
+            padding:12px;
+            border-radius:8px;
+            margin-bottom:15px;
+        }
+
+        .success{
+            background:#dcfce7;
+            color:#166534;
+        }
+
+        .error{
+            background:#fee2e2;
+            color:#991b1b;
+        }
+
+        .warning{
+            background:#fef3c7;
+            color:#92400e;
+        }
+
+        input{
+            width:100%;
+            padding:12px;
+            margin-top:6px;
+            border:1px solid #ddd;
+            border-radius:8px;
+        }
+
+        button{
+            background:#2563eb;
+            color:white;
+            border:none;
+            padding:12px;
+            border-radius:8px;
+            cursor:pointer;
+        }
+
+        form{
+            display:flex;
+            flex-direction:column;
+            gap:15px;
+        }
+    </style>
+
+    {% block extra_css %}
+    {% endblock %}
+</head>
+<body>
+
+<nav>
+    <a href="{% url 'home:home' %}">Home</a>
+
+    {% if request.user.is_authenticated %}
+        <a href="{% url 'users:profile' %}">Profile</a>
+        <a href="{% url 'users:logout' %}">Logout</a>
+    {% else %}
+        <a href="{% url 'users:register' %}">Register</a>
+        <a href="{% url 'users:login' %}">Login</a>
+    {% endif %}
+</nav>
+<div class="container">
+
+    {% if messages %}
+        {% for message in messages %}
+            <div class="message {{ message.tags }}">
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endif %}
+
+    {% block content %}
+    {% endblock %}
+
+</div>
+
+{% block extra_js %}
+{% endblock %}
+
+</body>
+</html>
+```

@@ -1,0 +1,147 @@
+{% extends "base.html" %}
+
+{% block title %}
+Subscription Detail
+{% endblock %}
+
+{% block extra_css %}
+<style>
+
+.subscription-box{
+    max-width:700px;
+    margin:40px auto;
+    background:#fff;
+    border-radius:15px;
+    box-shadow:0 8px 20px rgba(0,0,0,.08);
+    overflow:hidden;
+}
+
+.header{
+    background:#2563eb;
+    color:#fff;
+    text-align:center;
+    padding:30px;
+}
+
+.header h1{
+    margin:0;
+    font-size:32px;
+}
+
+.body{
+    padding:35px;
+}
+
+.row{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:18px 0;
+    border-bottom:1px solid #eee;
+}
+
+.row:last-child{
+    border:none;
+}
+
+.label{
+    font-weight:bold;
+    color:#555;
+}
+
+.value{
+    color:#222;
+    font-size:18px;
+}
+
+.price{
+    color:#16a34a;
+    font-size:30px;
+    font-weight:bold;
+}
+
+.days{
+    color:#2563eb;
+    font-weight:bold;
+}
+
+.actions{
+    margin-top:35px;
+    text-align:center;
+}
+
+.btn{
+    display:inline-block;
+    text-decoration:none;
+    padding:14px 30px;
+    border-radius:10px;
+    font-size:17px;
+    font-weight:bold;
+    transition:.3s;
+}
+
+.btn-pay{
+    background:#16a34a;
+    color:white;
+}
+
+.btn-pay:hover{
+    background:#15803d;
+}
+
+.note{
+    margin-top:25px;
+    color:#777;
+    text-align:center;
+    font-size:14px;
+}
+
+</style>
+{% endblock %}
+
+{% block content %}
+
+<div class="subscription-box">
+
+    <div class="header">
+        <h1>{{ category.name }}</h1>
+    </div>
+
+    <div class="body">
+
+        <div class="row">
+            <span class="label">Subscription</span>
+            <span class="value">{{ category.name }}</span>
+        </div>
+
+        <div class="row">
+            <span class="label">Duration</span>
+            <span class="value days">
+                {{ category.limit_days }} Days
+            </span>
+        </div>
+
+        <div class="row">
+            <span class="label">Price</span>
+            <span class="value price">
+                {{ category.price }} Toman
+            </span>
+        </div>
+
+        <div class="actions">
+
+            <a href="{% url 'posts:subscription-payment' category.id %}" class="btn btn-pay">
+                Pay Online
+            </a>
+
+        </div>
+
+        <div class="note">
+            After successful payment your subscription will be activated automatically.
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

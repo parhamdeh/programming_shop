@@ -1,0 +1,111 @@
+{% extends "base.html" %}
+
+{% block title %}
+Create Category
+{% endblock %}
+
+{% block content %}
+
+<div class="card category-card">
+
+    <h2>Create Category</h2>
+    <p class="subtitle">Add a new category for your posts.</p>
+
+    <form method="post">
+        {% csrf_token %}
+
+        {% for field in form %}
+            <div class="form-group">
+                <label for="{{ field.id_for_label }}">
+                    {{ field.label }}
+                </label>
+
+                {{ field }}
+
+                {% if field.errors %}
+                    <small class="field-error">
+                        {{ field.errors|join:", " }}
+                    </small>
+                {% endif %}
+            </div>
+        {% endfor %}
+
+        <button type="submit">
+            Save Category
+        </button>
+
+    </form>
+
+</div>
+
+{% endblock %}
+
+{% block extra_css %}
+<style>
+
+.category-card{
+    max-width:550px;
+    margin:auto;
+}
+
+.category-card h2{
+    margin-bottom:8px;
+    color:#2563eb;
+}
+
+.subtitle{
+    color:#666;
+    margin-bottom:25px;
+}
+
+.form-group{
+    margin-bottom:18px;
+}
+
+.form-group label{
+    display:block;
+    margin-bottom:7px;
+    font-weight:bold;
+    color:#333;
+}
+
+.form-group input{
+    width:100%;
+    padding:12px;
+    border:1px solid #ddd;
+    border-radius:8px;
+    font-size:15px;
+    transition:.2s;
+}
+
+.form-group input:focus{
+    outline:none;
+    border-color:#2563eb;
+    box-shadow:0 0 6px rgba(37,99,235,.25);
+}
+
+.field-error{
+    display:block;
+    margin-top:6px;
+    color:#dc2626;
+    font-size:13px;
+}
+
+button{
+    width:100%;
+    padding:13px;
+    background:#2563eb;
+    color:#fff;
+    border:none;
+    border-radius:8px;
+    font-size:16px;
+    cursor:pointer;
+    transition:.3s;
+}
+
+button:hover{
+    background:#1d4ed8;
+}
+
+</style>
+{% endblock %}

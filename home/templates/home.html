@@ -1,0 +1,420 @@
+{% extends "base.html" %}
+
+{% block title %}
+Home
+{% endblock %}
+
+{% block extra_css %}
+<style>
+
+.page-header{
+    margin-bottom:30px;
+}
+
+.page-header h1{
+    font-size:36px;
+    color:#222;
+}
+
+.section-title{
+    margin:60px 0 25px;
+    font-size:30px;
+    color:#222;
+}
+
+.admin-actions{
+    display:flex;
+    gap:15px;
+    margin-bottom:35px;
+    flex-wrap:wrap;
+}
+
+.admin-actions a{
+    background:#16a34a;
+    color:white;
+    text-decoration:none;
+    padding:12px 20px;
+    border-radius:10px;
+    font-weight:bold;
+    transition:.3s;
+}
+
+.admin-actions a:hover{
+    background:#15803d;
+}
+
+.posts-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fill,minmax(320px,1fr));
+    gap:25px;
+}
+
+.card{
+    background:white;
+    border-radius:15px;
+    overflow:hidden;
+    box-shadow:0 4px 18px rgba(0,0,0,.08);
+    transition:.3s;
+}
+
+.card:hover{
+    transform:translateY(-6px);
+}
+
+.card img{
+    width:100%;
+    height:220px;
+    object-fit:cover;
+}
+
+.no-image{
+    width:100%;
+    height:220px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    background:#efefef;
+    color:#777;
+}
+
+.card-body{
+    padding:20px;
+}
+
+.badge{
+    display:inline-block;
+    padding:6px 12px;
+    border-radius:20px;
+    color:white;
+    margin-bottom:15px;
+    font-size:13px;
+}
+
+.normal{
+    background:#2563eb;
+}
+
+.premium{
+    background:#f59e0b;
+}
+
+.card h2{
+    margin-bottom:12px;
+}
+
+.card p{
+    color:#666;
+    line-height:1.8;
+}
+
+.meta{
+    display:flex;
+    justify-content:space-between;
+    margin:15px 0;
+    color:#777;
+}
+
+.btn{
+    display:inline-block;
+    margin-top:10px;
+    padding:10px 18px;
+    background:#2563eb;
+    color:white;
+    text-decoration:none;
+    border-radius:8px;
+    transition:.3s;
+}
+
+.btn:hover{
+    background:#1d4ed8;
+}
+
+.buy-btn{
+    background:#16a34a;
+}
+
+.buy-btn:hover{
+    background:#15803d;
+}
+
+.pagination{
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    gap:15px;
+    margin:45px 0;
+}
+
+.pagination a{
+    background:#2563eb;
+    color:white;
+    padding:10px 16px;
+    text-decoration:none;
+    border-radius:8px;
+}
+
+.empty{
+    text-align:center;
+    font-size:20px;
+    color:#777;
+    margin:40px 0;
+}
+
+</style>
+{% endblock %}
+
+
+{% block content %}
+
+<div class="page-header">
+    <h1>Welcome</h1>
+</div>
+
+{% if request.user.is_staff %}
+
+<div class="admin-actions">
+
+    <a href="{% url 'posts:create-post' %}">
+        + Create Post
+    </a>
+
+    <a href="{% url 'posts:create-category' %}">
+        + Create Category
+    </a>
+
+    <a href="{% url 'posts:create-subscription' %}">
+        + Create Subscription
+    </a>
+
+</div>
+
+{% endif %}
+
+<!-- ================= POSTS ================= -->
+
+<h2 class="section-title">
+    Latest Posts
+</h2>
+
+<div class="posts-grid">
+
+{% for post in page_obj %}
+
+<div class="card">
+
+    {% if post.image %}
+        <img src="{{ post.image.url }}">
+    {% else %}
+        <div class="no-image">
+            No Image
+        </div>
+    {% endif %}
+
+    <div class="card-body">
+
+        {% if post.is_premium %}
+            <span class="badge premium">
+                Premium
+            </span>
+        {% else %}
+            <span class="badge normal">
+                Free
+            </span>
+        {% endif %}
+
+        <h2>{{ post.title }}</h2>
+
+        <p>
+            {{ post.content|truncatechars:120 }}
+        </p>
+
+        <div class="meta">
+
+            <span>
+                👤 {{ post.author.username }}
+            </span>
+
+            <span>
+                📂 {{ post.category.name }}
+            </span>
+
+        </div>
+
+        <a
+        href="{% url 'posts:detail' post.id %}"
+        class="btn">
+            Read More
+        </a>
+
+    </div>
+
+</div>
+
+{% empty %}
+
+<div class="empty">
+    No Posts Found
+</div>
+
+{% endfor %}
+
+</div>
+
+{% if page_obj.has_other_pages %}
+
+<div class="pagination">
+
+{% if page_obj.has_previous %}
+<a href="?page={{ page_obj.previous_page_number }}">
+Previous
+</a>
+{% endif %}
+
+<span>
+
+{{ page_obj.number }}
+
+/
+
+{{ page_obj.paginator.num_pages }}
+
+</span>
+
+{% if page_obj.has_next %}
+<a href="?page={{ page_obj.next_page_number }}">
+Next
+</a>
+{% endif %}
+
+</div>
+
+{% endif %}
+
+<!-- ================= CATEGORY ================= -->
+
+<h2 class="section-title">
+Categories
+</h2>
+
+<div class="posts-grid">
+
+{% for category in categories %}
+
+<div class="card">
+
+<div class="card-body">
+
+<h2>
+
+{{ category.name }}
+
+</h2>
+
+<p>
+
+{{ category.posts.count }}
+
+Posts
+
+</p>
+
+<a
+href="{% url 'posts:category-detail' category.id %}"
+class="btn">
+
+View Category
+
+</a>
+
+</div>
+
+</div>
+
+{% empty %}
+
+<div class="empty">
+
+No Categories
+
+</div>
+
+{% endfor %}
+
+</div>
+
+<!-- ================= SUBSCRIPTIONS ================= -->
+
+<h2 class="section-title">
+Subscription Plans
+</h2>
+
+<div class="posts-grid">
+
+{% for sub in subscriptions %}
+
+<div class="card">
+
+<div class="card-body">
+
+<h2>
+
+{{ sub.name }}
+
+</h2>
+
+<p>
+
+Subscription Duration
+
+</p>
+
+<h3>
+
+{{ sub.limit_days }}
+
+Days
+
+</h3>
+
+<br>
+
+<h2 style="color:#16a34a;">
+
+{{ sub.price }}
+
+Rial
+
+</h2>
+
+<a
+href="{% url 'posts:subscription-payment' sub.id %}"
+class="btn buy-btn">
+
+Buy Subscription
+
+</a>
+<a
+href="{% url 'posts:subscription-detail' sub.id %}"
+class="btn buy-btn">
+
+View Subscription
+
+</a>
+
+</div>
+
+</div>
+
+{% empty %}
+
+<div class="empty">
+
+No Subscription Found
+
+</div>
+
+{% endfor %}
+
+</div>
+
+{% endblock %}

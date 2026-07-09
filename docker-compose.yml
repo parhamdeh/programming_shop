@@ -1,0 +1,52 @@
+version: "3.9"
+
+services:
+
+  db:
+    image: postgres:17-alpine
+    container_name: postgres_blog
+    restart: always
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: shop
+      POSTGRES_USER: parham
+      POSTGRES_PASSWORD: paripari85
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    networks:
+      - backend
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: rabbitmq_blog
+    restart: always
+    ports:
+      - "5672:5672"      # Broker
+      - "15672:15672"    # Management Panel
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+    networks:
+      - backend
+
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: pgadmin4_container_blog
+    restart: always
+    ports:
+      - "5050:80"
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@admin.com
+      PGADMIN_DEFAULT_PASSWORD: pg_pass
+      PGADMIN_CONFIG_WTF_CSRF_CHECK_DEFAULT: "False"
+    depends_on:
+      - db
+    networks:
+      - backend
+
+volumes:
+  postgres-data:
+
+networks:
+  backend:
