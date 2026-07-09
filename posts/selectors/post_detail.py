@@ -1,8 +1,9 @@
-from xmlrpc.client import Boolean
 
 from posts.models import Post
 from posts.models import FavoritPost
+from posts.selectors.subscription import get_user_subscription_with_user
 from users.models import BaseUserModel
+from django.core.exceptions import ObjectDoesNotExist
 
 
 
@@ -27,7 +28,7 @@ def get_post_by_id(post_id:int) -> Post:
     return Post.objects.get(id=post_id)
 
 
-def check_favorit(user:BaseUserModel, post:Post) -> Boolean:
+def check_favorit(user:BaseUserModel, post:Post) -> bool:
 
     favorit = FavoritPost.objects.filter(
         user=user,
@@ -35,4 +36,16 @@ def check_favorit(user:BaseUserModel, post:Post) -> Boolean:
     ).first()
     if not favorit:
         return False
+    return True
+
+def check_post_is_premium(*, post_id: int, user_id: int) -> bool:
+    post = Post.objects.filter(is_premium=True, id=post_id).first()
+    if not post:
+        return False
+    
+    user = get_user_subscription_with_user(user_id=user_id).first()
+    if not user:
+        return False
+        
+    
     return True
