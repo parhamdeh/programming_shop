@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     "django.contrib.sites",
     "phonenumber_field",
     "azbankgateways",
+    "ckeditor",
     "mptt",
     'users',
     'posts',
@@ -96,7 +97,16 @@ DATABASES = {
         'PORT': os.getenv("DB_PORT"),
     }
 }
+LOGIN_URL = "users:login"
+CKEDITOR_UPLOAD_PATH = "uploads/"
 
+CKEDITOR_CONFIGS = {
+    'default': {
+        'toolbar': 'full',
+        'height': 300,
+        'width': '100%',
+    },
+}
 
 # Password validation
 # https://docs.djangoproject.com/en/6.0/ref/settings/#auth-password-validators

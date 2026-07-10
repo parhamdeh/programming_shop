@@ -1,15 +1,26 @@
-# Django programming 
+# Django Programming Course Platform
 
-A Django-based blog backend featuring post management, public/private user profiles, and a subscription (follow) system between users.
+A Django-based platform for programming video courses, where users purchase a subscription to gain access to watch the videos.
 
 ## ✨ Features
 
-- 🔐 User authentication (Auth API)
-- 📝 Post management (create, view, edit)
+- 🔐 User authentication
+- 📝 Course & video content management
+- 💳 Subscription-based access — users must subscribe to watch videos
 - 👤 User profiles with public/private visibility (`is_private`)
-- 🔔 Subscription system — follow other users
-- 🔒 Access control on posts based on ownership and subscription status
+- 🔒 Access control on content based on subscription status
 - ✅ Full test coverage with `pytest-django` and `factory_boy`
+
+## 🏗 Architecture
+
+The project follows a **Service Layer** architecture, separating concerns across distinct layers:
+
+- **Selectors** — handle read/query logic
+- **Services** — handle business logic and write operations
+- **Models** — define the data structure
+- **APIs / Views** — handle request/response and delegate to services/selectors
+
+This separation keeps business logic decoupled from the views and database access, making the codebase easier to test and maintain.
 
 ## 🛠 Tech Stack
 
@@ -19,33 +30,6 @@ A Django-based blog backend featuring post management, public/private user profi
 | Database | PostgreSQL |
 | Testing | pytest, pytest-django, factory-boy, Faker |
 | Language | Python 3.14+ |
-
-## 📁 Project Structure
-
-```
-blog_with_Django/
-├── config/
-│   └── django/
-│       ├── base.py
-│       ├── local.py
-│       └── production.py
-├── blog_version2/
-│   ├── home/
-│   │   └── selectors/
-│   │       └── posts.py
-│   ├── users/
-│   │   └── models.py
-│   └── tests/
-│       ├── apis/
-│       ├── test_selectors/
-│       └── test_services/
-├── conftest.py
-├── pytest.ini
-├── requirements.txt
-└── manage.py
-```
-
-> The structure above is based on the paths observed in the project — adjust as needed.
 
 ## ⚙️ Prerequisites
 
@@ -58,8 +42,7 @@ blog_with_Django/
 ### 1. Clone the repository
 
 ```bash
-git clone https://github.com/your-username/blog-with-django.git
-cd blog-with-django
+git clone https://github.com/parhamdeh/programming_shop.git
 ```
 
 ### 2. Create and activate a virtual environment
@@ -133,31 +116,3 @@ Run a specific test file:
 ```bash
 pytest blog_version2/tests/test_selectors/test_posts_selectors.py
 ```
-
-## 📡 API Documentation
-
-> List the main API endpoints here, for example:
-
-| Method | Endpoint | Description |
-|---|---|---|
-| `POST` | `/api/auth/register/` | Register a new user |
-| `POST` | `/api/auth/login/` | Log in and receive a token |
-| `GET` | `/api/posts/` | List posts |
-| `GET` | `/api/posts/<slug>/` | Retrieve post details |
-| `POST` | `/api/subscriptions/` | Subscribe/follow a user |
-
-## 🤝 Contributing
-
-1. Fork the repository
-2. Create a new branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add amazing feature'`)
-4. Push the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
-
-## 📄 License
-
-This project is licensed under the MIT License. See the `LICENSE` file for details.
-
-## 📬 Contact
-
-For questions or suggestions, please open an issue in this repository.

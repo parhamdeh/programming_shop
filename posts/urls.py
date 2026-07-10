@@ -17,7 +17,7 @@ urlpatterns = [
     path(route="create_cat/", view=CreateCategory.as_view(), name="create-category"),
     path(route="detail_cat/<int:category_id>/", view=CategoryDetailView.as_view(), name="category-detail"),
     path(route="detail_sub/<int:subscription_id>/", view=SubscriptionDetailView.as_view(), name="subscription-detail"),
-    # path(route="payment/<int:subscription_id>/", view=SubscriptionPaymentView.as_view(), name="payment"),
-    path(route="payment/<int:subscription_id>/", view=VerifyPay.as_view(), name="payment"),
-    # path(route="verify/", view=VerifyPay.as_view(), name="verify"),
+    path(route="payment/<int:subscription_id>/", view=SubscriptionPaymentView.as_view(), name="payment"),
+    # path(route="payment/<int:subscription_id>/", view=VerifyPay.as_view(), name="payment"),
+    path(route="verify/", view=VerifyPay.as_view(), name="verify"),
 ]

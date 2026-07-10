@@ -73,65 +73,76 @@ class SubscriptionPaymentView(LoginRequiredMixin, NoActiveSubscriptionRequiredMi
         "MerchantID": settings.MERCHANT,
         "Amount": subscription.price,
         "Description": "توضیحات مربوط به تراکنش را در این قسمت وارد کنید",
-        "Phone": request.user.phone,
+        "Phone": str(request.user.phone),
         "CallbackURL": CallbackURL,
     }
         data = json.dumps(data)
-    
         headers = {'content-type': 'application/json', 'content-length': str(len(data)) }
+
         try:
             response = requests.post(ZP_API_REQUEST, data=data,headers=headers, timeout=10)
             logger.info("sent post request to zarinpal")
+
             if response.status_code == 200:
                 response = response.json()
                 if response['Status'] == 100:
                     logger.info("sent a success post request to zarinpal")
-                    return {'status': True, 'url': ZP_API_STARTPAY + str(response['Authority']), 'authority': response['Authority']}
+                    payment_url = ZP_API_STARTPAY + str(data['Authority'])
+                    return redirect(payment_url)
+                    # return {'status': True, 'url': ZP_API_STARTPAY + str(response['Authority']), 'authority': response['Authority']}
                 else:
                     logger.info("sent a faild post request to zarinpal")
-                    return {'status': False, 'code': str(response['Status'])}
-            return response
+                    messages.error(request, f"{data['Status']}")
+                    return redirect("posts:subscription-detail", subscription_id=subscription_id)
+                    # return {'status': False, 'code': str(response['Status'])}
+            # return response
+            # messages.error(request, f"خطا در ایجاد تراکنش: کد {data['Status']}")
+            return redirect("posts:subscription-detail", subscription_id=subscription_id)
     
         except requests.exceptions.Timeout:
-            return {'status': False, 'code': 'timeout'}
+            # messages.error(request,f"خطا در ایجاد تراکنش: کد  f"خطا در ایجاد تراکنش: کد {data['Status']}")
+            return redirect("posts:subscription-detail", subscription_id=subscription_id)
+            # return {'status': False, 'code': 'timeout'}
         except requests.exceptions.ConnectionError:
-            return {'status': False, 'code': 'connection error'}
+            # messages.error(request, f"خطا در ایجاد تراکنش: کد {data['Status']}")
+            return redirect("posts:subscription-detail", subscription_id=subscription_id)
+            # return {'status': False, 'code': 'connection error'}
     
 
 class VerifyPay(LoginRequiredMixin, NoActiveSubscriptionRequiredMixin, View):
 
-    def get(self, request: HttpRequest, subscription_id: int) -> HttpResponse:
-        subscription = get_subscription_by_id(sub_id=subscription_id).first()
-        # sub_id = request.session["subscription"]["subscription_id"]
-        # subscription = get_subscription_by_id(sub_id=int(sub_id)).first()
-
-        # t_status = request.GET.get("Status")
-        # t_authority = request.GET["Authority"]
+    def get(self, request: HttpRequest) -> HttpResponse:
         
-        # if t_status == "OK":
-        #     data = {
-        #     "MerchantID": settings.MERCHANT,
-        #     "Amount": subscription.price,
-        #     "Authority": t_authority,
-        # }
-        #     data = json.dumps(data)
+        sub_id = request.session["subscription"]["subscription_id"]
+        subscription = get_subscription_by_id(sub_id=int(sub_id)).first()
+
+        t_status = request.GET.get("Status")
+        t_authority = request.GET["Authority"]
+        
+        if t_status == "OK":
+            data = {
+            "MerchantID": settings.MERCHANT,
+            "Amount": subscription.price,
+            "Authority": t_authority,
+        }
+            data = json.dumps(data)
     
-        #     headers = {'content-type': 'application/json', 'content-length': str(len(data)) }
-        #     response = requests.post(ZP_API_VERIFY, data=data, headers=headers)
+            headers = {'content-type': 'application/json', 'content-length': str(len(data)) }
+            response = requests.post(ZP_API_VERIFY, data=data, headers=headers)
 
-        #     if response.status_code == 200:
-        #         response = response.json()
-        #         if response['Status'] == 100:
-        create_user_subscription(user=request.user, subscription=subscription)
-        logger.info("payment successfully!")
-        return redirect("home:home")
-        #             return {'status': True, 'RefID': response['RefID']}
-        #         else:
-        #             logger.error("payment faild!!")
-        #             return {'status': False, 'code': str(response['Status'])}
-        #     return response
+            if response.status_code == 200:
+                response = response.json()
+                if response['Status'] == 100:
+                    create_user_subscription(user=request.user, subscription=subscription)
+                    logger.info("payment successfully!")
+                    messages.info(request, "payment successfully!")
+                    return {'status': True, 'RefID': response['RefID']}
+                else:
+                    logger.error("payment faild!!")
+                    return {'status': False, 'code': str(response['Status'])}
+            return response
 
-        # else:
-        #     logger.warning(f"Transaction faild or canceled by {request.user.username}")
-        #     return HttpResponse("Transaction faild or canceled by user!")
+        else:
+            logger.warning(f"Transaction faild or canceled by {request.user.username}")
+            return HttpResponse("Transaction faild or canceled by user!")
         
