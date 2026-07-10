@@ -5,11 +5,16 @@ from posts.models import Post
 from posts.models import UserSubscription
 
 
-def get_user_subscription_detail(*, request: HttpRequest) -> UserSubscription:
+def get_user_subscription_detail(*, request: HttpRequest) -> UserSubscription | None:
     subscription = UserSubscription.objects.filter(
                 user=request.user,
                 is_active=True,
             ).select_related("subscription").last()
+    if not subscription:
+        return None
+    if subscription.remaining_days == 0:
+        subscription.delete()
+        return None
     return subscription
 
 

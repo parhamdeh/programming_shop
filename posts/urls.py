@@ -4,7 +4,7 @@ from posts.views.post_create_view import CreatePost
 from posts.views.posts_view import DeleteCommetntView, DeleteFavorit, PostDetailView, PostFavoritView
 from posts.views.subscription_create_view import CreateSubscription
 from posts.views.category_view import CategoryDetailView
-from posts.views.subscription_view import SubscriptionDetailView, SubscriptionPaymentView
+from posts.views.subscription_view import SubscriptionDetailView, SubscriptionPaymentView, VerifyPay
 
 app_name = "posts"
 urlpatterns = [
@@ -17,5 +17,7 @@ urlpatterns = [
     path(route="create_cat/", view=CreateCategory.as_view(), name="create-category"),
     path(route="detail_cat/<int:category_id>/", view=CategoryDetailView.as_view(), name="category-detail"),
     path(route="detail_sub/<int:subscription_id>/", view=SubscriptionDetailView.as_view(), name="subscription-detail"),
-    path(route="subscription/payment/<int:subscription_id>/", view=SubscriptionPaymentView.as_view(), name="subscription-payment",),
+    # path(route="payment/<int:subscription_id>/", view=SubscriptionPaymentView.as_view(), name="payment"),
+    path(route="payment/<int:subscription_id>/", view=VerifyPay.as_view(), name="payment"),
+    # path(route="verify/", view=VerifyPay.as_view(), name="verify"),
 ]

@@ -25,7 +25,7 @@ class ProfileView(LoginRequiredMixin, View):
         
         subscription = get_user_subscription_detail(request=request)
         favorits = get_user_favorite_posts(request=request)
-      
+        
 
         return render(
             request,

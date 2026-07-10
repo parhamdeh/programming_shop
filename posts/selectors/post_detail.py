@@ -5,6 +5,8 @@ from posts.selectors.subscription import get_user_subscription_with_user
 from users.models import BaseUserModel
 from django.core.exceptions import ObjectDoesNotExist
 
+from users.selectors.user_selector import get_user_by_id
+
 
 
 def get_post_detail(post_id:int) -> Post:
@@ -39,13 +41,13 @@ def check_favorit(user:BaseUserModel, post:Post) -> bool:
     return True
 
 def check_post_is_premium(*, post_id: int, user_id: int) -> bool:
-    post = Post.objects.filter(is_premium=True, id=post_id).first()
-    if not post:
-        return False
+    post = get_post_by_id(post_id=post_id)
+    if post.author.id == user_id:
+        return True
+    is_premium = Post.objects.filter(is_premium=True, id=post_id).exists()
+    if not is_premium:
+        return True
     
-    user = get_user_subscription_with_user(user_id=user_id).first()
-    if not user:
-        return False
+    has_subscription = get_user_subscription_with_user(user_id=user_id).exists()
+    return has_subscription
         
-    
-    return True

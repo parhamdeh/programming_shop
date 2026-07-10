@@ -46,7 +46,6 @@ INSTALLED_APPS = [
     'users',
     'posts',
     'home',
-    'payment',
 ]
 
 MIDDLEWARE = [
@@ -91,10 +90,10 @@ DATABASES = {
     'default': {
         'ENGINE': os.getenv("DB_ENGINE"),
         'NAME': os.getenv("DB_NAME"),
-        'USER': os.getenv("USER"),
-        'PASSWORD': os.getenv("PASSWORD"),
-        'HOST': os.getenv("HOST"),
-        'PORT': os.getenv("PORT"),
+        'USER': os.getenv("DB_USER"),
+        'PASSWORD': os.getenv("DB_PASSWORD"),
+        'HOST': os.getenv("DB_HOST"),
+        'PORT': os.getenv("DB_PORT"),
     }
 }
 
@@ -166,17 +165,10 @@ AZ_IRANIAN_BANK_GATEWAYS = {
         }
     }
 }
-IGW_IS_SANDBOX = True
+SANDBOX = True
+MERCHANT = os.getenv("MERCHANT")
 
-IGW_DEFAULT_GATEWAY = "zibal"
 
-IGW_GATEWAYS = {
-    "zibal": {
-        "MERCHANT_CODE": "zibal",
-    }
-}
-
-ZIBAL_MERCHANT = os.getenv("ZIBAL_MERCHANT")
 
 from config.logging import LOGGING
 

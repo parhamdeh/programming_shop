@@ -25,8 +25,7 @@ urlpatterns = [
     path('users/', include('users.urls')),
     path('posts/', include('posts.urls')),
     path('', include('home.urls')),
-    path("bankgateways/", az_bank_gateways_urls()),
-    path("payments/", include("payment.urls")),
+    # path("bankgateways/", az_bank_gateways_urls()),
 ]
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

@@ -9,3 +9,6 @@ def get_users_list() ->QuerySet[BaseUserModel]:
     """
     return BaseUserModel.objects.all()
 
+def get_user_by_id(*, user_id:int) -> BaseUserModel:
+    return BaseUserModel.objects.filter(id=user_id)
+
