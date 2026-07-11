@@ -9,25 +9,37 @@ Create Category
 <div class="card category-card">
 
     <h2>Create Category</h2>
-    <p class="subtitle">Add a new category for your posts.</p>
+    <p class="subtitle">
+        Create a new category or a subcategory.
+    </p>
 
     <form method="post">
         {% csrf_token %}
 
         {% for field in form %}
+
             <div class="form-group">
+
                 <label for="{{ field.id_for_label }}">
                     {{ field.label }}
                 </label>
 
                 {{ field }}
 
+                {% if field.help_text %}
+                    <small class="help-text">
+                        {{ field.help_text }}
+                    </small>
+                {% endif %}
+
                 {% if field.errors %}
                     <small class="field-error">
                         {{ field.errors|join:", " }}
                     </small>
                 {% endif %}
+
             </div>
+
         {% endfor %}
 
         <button type="submit">
@@ -41,47 +53,68 @@ Create Category
 {% endblock %}
 
 {% block extra_css %}
+
 <style>
 
 .category-card{
-    max-width:550px;
-    margin:auto;
+    max-width:600px;
+    margin:40px auto;
+    padding:35px;
 }
 
 .category-card h2{
     margin-bottom:8px;
     color:#2563eb;
+    font-size:30px;
 }
 
 .subtitle{
     color:#666;
-    margin-bottom:25px;
+    margin-bottom:28px;
+    font-size:15px;
 }
 
 .form-group{
-    margin-bottom:18px;
+    margin-bottom:22px;
 }
 
 .form-group label{
     display:block;
-    margin-bottom:7px;
-    font-weight:bold;
+    margin-bottom:8px;
+    font-weight:600;
     color:#333;
 }
 
-.form-group input{
+.form-group input,
+.form-group select,
+.form-group textarea{
     width:100%;
-    padding:12px;
-    border:1px solid #ddd;
-    border-radius:8px;
+    padding:12px 14px;
+    border:1px solid #d1d5db;
+    border-radius:10px;
     font-size:15px;
-    transition:.2s;
+    background:#fff;
+    transition:.25s;
+    box-sizing:border-box;
 }
 
-.form-group input:focus{
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus{
     outline:none;
     border-color:#2563eb;
-    box-shadow:0 0 6px rgba(37,99,235,.25);
+    box-shadow:0 0 8px rgba(37,99,235,.18);
+}
+
+.form-group select{
+    cursor:pointer;
+}
+
+.help-text{
+    display:block;
+    margin-top:6px;
+    color:#6b7280;
+    font-size:13px;
 }
 
 .field-error{
@@ -89,23 +122,31 @@ Create Category
     margin-top:6px;
     color:#dc2626;
     font-size:13px;
+    font-weight:500;
 }
 
 button{
     width:100%;
-    padding:13px;
-    background:#2563eb;
-    color:#fff;
+    padding:14px;
     border:none;
-    border-radius:8px;
+    border-radius:10px;
+    background:#2563eb;
+    color:white;
     font-size:16px;
+    font-weight:bold;
     cursor:pointer;
     transition:.3s;
 }
 
 button:hover{
     background:#1d4ed8;
+    transform:translateY(-2px);
+}
+
+button:active{
+    transform:scale(.98);
 }
 
 </style>
+
 {% endblock %}

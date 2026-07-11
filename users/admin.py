@@ -1,2 +1,31 @@
 from django.contrib import admin
 
+from .models import BaseUserModel, OtpCode, UserProfileModel
+
+from django.contrib.auth.admin import UserAdmin
+
+
+
+@admin.register(BaseUserModel)
+class BaseUserAdmin(UserAdmin):
+    list_display = (
+        "id",
+        "username",
+        "phone",
+        "is_staff",
+        "is_active",
+    )
+
+    search_fields = (
+        "username",
+        "phone",
+    )
+
+    ordering = (
+        "id",
+    )
+
+
+
+admin.site.register(OtpCode)
+admin.site.register(UserProfileModel)

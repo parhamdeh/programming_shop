@@ -4,7 +4,9 @@ from django.http import HttpRequest, HttpResponse
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.exceptions import ObjectDoesNotExist
+from django.db.models import Q
 
+from posts.models import Post
 from posts.selectors.category import get_category_by_id
 
 import logging
@@ -33,10 +35,19 @@ class CategoryDetailView(LoginRequiredMixin, View):
         if not category:
             raise ObjectDoesNotExist("category not found")
         
+        if category.parent is None:
+            posts = Post.objects.filter(
+                Q(category=category) |
+                Q(category__parent=category)
+            ).distinct()
+        else:
+            posts = category.posts.all()
+        
 
         return render(request=request,
                       template_name=self.template_name,
                       context={
                           'category' : category,
+                          'posts' : posts,
 
                       })

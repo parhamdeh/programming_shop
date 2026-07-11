@@ -92,6 +92,28 @@ Category Detail
     text-align:center;
     color:#777;
 }
+.parent-link{
+    display:inline-block;
+    text-decoration:none;
+    color:#2563eb;
+    font-size:18px;
+    font-weight:bold;
+    transition:.3s;
+}
+
+.parent-link:hover{
+    color:#1d4ed8;
+    text-decoration:underline;
+}
+
+.root-category{
+    display:inline-block;
+    padding:8px 14px;
+    background:#f3f4f6;
+    color:#666;
+    border-radius:8px;
+    font-weight:bold;
+}
 </style>
 {% endblock %}
 
@@ -105,12 +127,33 @@ Category Detail
         {{ category.posts.count }}
     </p>
 </div>
+<div class="category-header">
 
-{% if category.posts.all %}
+    
+
+    {% if category.parent %}
+        <h3>Parent Category</h3>
+        <a href="{% url 'posts:category-detail' category.parent.id %}"
+           class="parent-link">
+            📁 {{ category.parent.name }}
+        </a>
+    {% elif category.children.all %}
+        <h3>Sub Categories</h3>
+        {% for child in category.children.all %}
+            <a href="{% url 'posts:category-detail' child.id %}" class="parent-link">
+                📁 {{ child.name }}
+            </a><br>
+        {% empty %}
+            <span>No subcategories.</span>
+        {% endfor %}
+    {% endif %}
+
+</div>
+{% if posts %}
 
 <div class="posts-grid">
 
-{% for post in category.posts.all %}
+{% for post in posts %}
 
 <div class="post-card">
 
@@ -121,13 +164,9 @@ Category Detail
     <div class="post-content">
 
         {% if post.is_premium %}
-            <span class="badge premium">
-                Premium
-            </span>
+            <span class="badge premium">Premium</span>
         {% else %}
-            <span class="badge">
-                Free
-            </span>
+            <span class="badge">Free</span>
         {% endif %}
 
         <h3 class="post-title">

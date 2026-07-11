@@ -18,7 +18,7 @@ The project follows a **Service Layer** architecture, separating concerns across
 - **Selectors** — handle read/query logic
 - **Services** — handle business logic and write operations
 - **Models** — define the data structure
-- **APIs / Views** — handle request/response and delegate to services/selectors
+- **Views** — handle request/response and delegate to services/selectors
 
 This separation keeps business logic decoupled from the views and database access, making the codebase easier to test and maintain.
 
