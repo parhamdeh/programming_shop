@@ -61,7 +61,14 @@ class CreatePost(View):
             except Exception as e:
                 logger.exception(
                 f"database error: {e}"
-            )
+                )
+                return render(
+                    request,
+                    self.template_name,
+                    {
+                        "form": form,
+                    },
+                )
             logger.info(f"post created : {post.title}")
             messages.success(request, "Post created successfully.")
             return redirect("posts:detail", post.id)

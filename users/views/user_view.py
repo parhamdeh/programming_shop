@@ -102,6 +102,13 @@ class RegisterUser(View):
             except Exception as e:
                 logger.exception(f"Error while creating user -> {e}")
 
+                return render(
+                request,
+                self.template_name,
+                {
+                    "form": self.form,
+                },
+                )
             logger.info(f"New user registered: {user.username}")
 
             messages.success(
@@ -185,9 +192,9 @@ class LoginView(View):
             )
 
             return redirect("home:home")
-        logger.warning(
-            f"Invalid credentials for user {form.user.username}"
-            )
+        submitted_username = request.POST.get("username", "unknown")
+        logger.warning(f"Invalid credentials for user {submitted_username}")
+
         messages.error(
             request,
             "Invalid credentials.",

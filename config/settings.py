@@ -169,15 +169,13 @@ AZ_IRANIAN_BANK_GATEWAYS = {
 
         "ZARINPAL": {
 
-            "MERCHANT_CODE": "xxxxxxxxxxxxxxxx",
+            "MERCHANT_CODE": os.getenv("MERCHANT"),
 
             "SANDBOX": 1,
         }
     }
 }
 SANDBOX = True
-MERCHANT = os.getenv("MERCHANT")
-
 
 
 from config.logging import LOGGING
