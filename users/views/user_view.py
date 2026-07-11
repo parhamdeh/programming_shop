@@ -4,6 +4,7 @@ import logging
 
 logger = logging.getLogger(__name__)
 
+from django.contrib.auth.hashers import make_password
 from django.utils import timezone
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views import View
@@ -66,7 +67,7 @@ class RegisterUser(View):
                 request,
                 "You are already logged in."
             )
-            return redirect("home")
+            return redirect("home:home")
 
         return super().dispatch(
             request,
@@ -95,31 +96,14 @@ class RegisterUser(View):
         form = self.form_class(request.POST)
 
         if form.is_valid():
-            try:
-                user = create_user(username=form.cleaned_data["username"],
-                                                phone=form.cleaned_data["phone"],
-                                                password=form.cleaned_data["password"])
-            except Exception as e:
-                logger.exception(f"Error while creating user -> {e}")
-
-                return render(
-                request,
-                self.template_name,
-                {
-                    "form": self.form,
-                },
-                )
-            logger.info(f"New user registered: {user.username}")
-
-            messages.success(
-                request,
-                "Account created successfully."
-            )
-
-            otp = create_otp_code(user=user)
+            request.session["username"] = form.cleaned_data["username"]
+            request.session["phone"] = form.cleaned_data["phone"]
+            request.session["password"] = make_password(form.cleaned_data["password"])
+            
+            otp = create_otp_code(phone=form.cleaned_data["phone"])
             
             send_otp_task.delay(
-                phone=user.phone,
+                phone=str(form.cleaned_data["phone"]),
                 code=otp.code,
             )
             print(otp.code)
@@ -128,7 +112,7 @@ class RegisterUser(View):
                 countdown=120,
             )
 
-            return redirect("users:code", user.id)
+            return redirect("users:code")
 
         messages.error(
             request,
@@ -233,7 +217,10 @@ class VerifyOtpView(View):
     form_class = VerifyOtpForm
     template_name = "users/validation_code.html"
 
-    def get(self, request, user_id):
+    def get(self, request):
+        if not request.session.get("phone"):
+            messages.error(request, "please register first.")
+            return redirect("users:register")
         return render(
             request,
             self.template_name,
@@ -242,7 +229,7 @@ class VerifyOtpView(View):
             }
         )
 
-    def post(self, request, user_id):
+    def post(self, request):
 
         form = self.form_class(request.POST)
 
@@ -250,20 +237,15 @@ class VerifyOtpView(View):
 
             code = form.cleaned_data["code"]
 
-            user = get_object_or_404(
-                BaseUserModel,
-                id=user_id
-            )
-
             otp = OtpCode.objects.filter(
-                user=user,
+                phone=request.session["phone"],
                 code=code,
                 is_used=False,
             ).last()
 
             if otp is None:
                 logger.warning(
-                    f"Invalid OTP for user {user.username}"
+                    f"Invalid OTP for user "
                 )
 
                 messages.error(
@@ -272,13 +254,12 @@ class VerifyOtpView(View):
                 )
 
                 return redirect(
-                    "users:code",
-                    user.id
+                    "users:code"
                 )
 
             if otp.is_expired():
                 logger.warning(
-                    f"OTP is expired for user {user.username}"
+                    f"OTP is expired for user"
                 )
                 messages.error(
                     request,
@@ -287,14 +268,34 @@ class VerifyOtpView(View):
                 otp.delete()
 
                 return redirect(
-                    "users:code",
-                    user.id
+                    "users:code"
                 )
 
             otp.is_used = True
             otp.save(update_fields=["is_used"])
 
+            try:
+                user = create_user(username=request.session["username"],
+                                                phone=request.session["phone"],
+                                                password=request.session["password"])
+            except Exception as e:
+                logger.exception(f"Error while creating user -> {e}")
+                return render(
+                request,
+                self.template_name,
+                {
+                    "form": self.form,
+                },
+                )
+            del request.session["username"]
+            del request.session["phone"]
+            del request.session["password"]
+            logger.info(f"New user registered: {user.username}")
 
+            messages.success(
+                request,
+                "Account created successfully."
+            )
             login(
                 request,
                 user

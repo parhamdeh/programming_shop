@@ -33,6 +33,10 @@ class RegisterForm(forms.ModelForm):
 
         password = cleaned_data.get("password")
         confirm_password = cleaned_data.get("confirm_password")
+        phone = cleaned_data.get("phone")
+        if phone and len(str(phone).replace("+98", "0")) > 11:
+            raise forms.ValidationError("phone number is not valid")
+        cleaned_data["phone"] = str(phone).replace("+98", "0")
 
         if password and confirm_password:
             if password != confirm_password:

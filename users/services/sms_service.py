@@ -1,13 +1,14 @@
-from django.conf import settings
+from config import settings
 from kavenegar import KavenegarAPI
 
 
 def send_otp(phone: str, code: str):
     api = KavenegarAPI(settings.KAVENEGAR_API_KEY)
-
+    print(phone)
     params = {
+        "sender" : settings.KAVENEGAR_SENDER,
         "receptor": phone,
         "message": f"Your verification code is: {code}",
     }
 
-    api.sms_send(params)
+    return api.sms_send(params)

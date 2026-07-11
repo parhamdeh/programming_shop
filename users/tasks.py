@@ -6,6 +6,7 @@ from users.models import OtpCode
 
 @shared_task
 def send_otp_task(phone, code):
+    print(1)
     send_otp(phone, code)
 
 @shared_task

@@ -5,7 +5,10 @@ from django.db import transaction
 
 
 def create_user(*, username:str, password:str, phone:str) -> BaseUserModel:
-    return BaseUserModel.objects.create_user(username=username, phone=phone, password=password)
+    user =  BaseUserModel.objects.create_user(username=username, phone=phone)
+    user.password = password
+    user.save()
+    return user 
 
 def create_profile(*, user:BaseUserModel, subscription:Subscription | None) -> UserProfileModel:
     return UserProfileModel.objects.create(user=user, subscription=subscription)

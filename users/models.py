@@ -137,16 +137,9 @@ class UserProfileModel(BaseModel):
 
 
 class OtpCode(BaseModel):
-    user = models.ForeignKey(
-        BaseUserModel,
-        on_delete=models.CASCADE,
-        related_name="otp_codes",
-    )
-
+    phone = models.CharField(max_length=11)
     code = models.CharField(max_length=6)
-
     is_used = models.BooleanField(default=False)
-
     created_at = models.DateTimeField(auto_now_add=True)
 
     def is_expired(self):
