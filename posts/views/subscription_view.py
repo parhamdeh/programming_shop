@@ -16,7 +16,6 @@ from posts.services.subscription import create_user_subscription
 
 logger = logging.getLogger(__name__)
 
-# آدرس‌های به‌روز API v4 زرین‌پال — دیگه ساب‌دامین جدا برای sandbox نداره
 ZP_API_REQUEST = "https://sandbox.zarinpal.com/pg/v4/payment/request.json"
 ZP_API_VERIFY = "https://sandbox.zarinpal.com/pg/v4/payment/verify.json"
 ZP_API_STARTPAY = "https://sandbox.zarinpal.com/pg/StartPay/"

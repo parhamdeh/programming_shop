@@ -26,6 +26,7 @@ urlpatterns = [
     path('posts/', include('posts.urls')),
     path('', include('home.urls')),
     path('ckeditor/', include('ckeditor_uploader.urls')),
+    path('apis/', include("view_api.urls"))
     # path("bankgateways/", az_bank_gateways_urls()),
 ]
 if settings.DEBUG:

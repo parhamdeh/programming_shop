@@ -47,6 +47,7 @@ INSTALLED_APPS = [
     'users',
     'posts',
     'home',
+    "view_api",
 ]
 
 MIDDLEWARE = [
