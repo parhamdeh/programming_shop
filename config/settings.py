@@ -43,6 +43,8 @@ INSTALLED_APPS = [
     "phonenumber_field",
     "azbankgateways",
     "ckeditor",
+    "rest_framework",
+    "drf_spectacular",
     "mptt",
     'users',
     'posts',
@@ -165,6 +167,28 @@ DEFAULT_PROTOCOL = "http"
 
 SANDBOX = True
 MERCHANT = os.getenv("MERCHANT")
+
+REST_FRAMEWORK = {
+    "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
+
+    "DEFAULT_PERMISSION_CLASSES": [
+        "rest_framework.permissions.AllowAny",
+    ],
+
+}
+SPECTACULAR_SETTINGS = {
+    "TITLE": "Programmin Shop API",
+    "DESCRIPTION": "REST API documentation for Blog Project",
+    "VERSION": "1.0.0",
+
+    "SERVE_INCLUDE_SCHEMA": False,
+
+    "SWAGGER_UI_SETTINGS": {
+        "deepLinking": True,
+        "displayRequestDuration": True,
+        "persistAuthorization": True,
+    },
+}
 
 from config.logging import LOGGING
 
