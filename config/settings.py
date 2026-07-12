@@ -190,5 +190,6 @@ SPECTACULAR_SETTINGS = {
     },
 }
 
+
 from config.logging import LOGGING
 
