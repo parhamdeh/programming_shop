@@ -5,6 +5,8 @@ from view_api.apps_api.posts.comments.post_comment_apis import PostCommentListCr
 from view_api.apps_api.posts.likes.like_apis import PostLikeListCreateAPIView
 from view_api.apps_api.posts.post.id.post_id_apis import PostRetrieveUpdateDestroyAPIView
 from view_api.apps_api.posts.post.post_apis import PostListCreateAPIView
+from view_api.apps_api.posts.subscription.id.subscription_id_apis import SubscriptionRetrieveUpdateDstroyAPIView
+from view_api.apps_api.posts.subscription.subscription_apis import SubscriptionListCreateAPIView
 from view_api.apps_api.users.authentication.register_user_apis import RegisterUserAPIView, VerifyOtpAPIView
 from view_api.apps_api.users.profile.user_profile_apis import ProfileAPIView
 from view_api.apps_api.users.user.id.user_id_apis import UserRetrieveUpdatadeDestroy
@@ -12,6 +14,7 @@ from view_api.apps_api.users.user.user_apis import UserListCreate
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView, TokenVerifyView
 
 from view_api.apps_api.posts.category.id.category_id_apis import CategoryRetrieveUpdateDstroyAPIView
+from view_api.tests.posts.subscription.test_subscription_apis import SubscriptionListCreateAPIViewTest
 
 
 app_name = "api"
@@ -33,4 +36,6 @@ urlpatterns = [
     path(route="comments/<int:post_id>/", view=PostCommentListCreateAPIView.as_view(), name="post-comments"),
     path(route="categories/", view=CategoryListCreateAPIView.as_view(), name="category-list-create"),
     path(route="categories/<int:category_id>/", view=CategoryRetrieveUpdateDstroyAPIView.as_view(), name="category-detail"),
+    path(route="subscriptions/", view=SubscriptionListCreateAPIView.as_view(), name="subscription-list-create"),
+    path(route="subscriptions/<int:subscription_id>/", view=SubscriptionRetrieveUpdateDstroyAPIView.as_view(), name="subscription-detail"),
 ]

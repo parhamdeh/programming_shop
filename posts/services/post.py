@@ -1,8 +1,9 @@
 from rest_framework.exceptions import NotFound
 
 
-from posts.models import Category, Comments, FavoritPost, Post
+from posts.models import Category, Comments, FavoritPost, Post, Subscription
 from posts.selectors.category import get_category_by_id
+from posts.selectors.subscription import get_subscription_by_id
 from users.models import BaseUserModel
 from posts.selectors.post_detail import get_post_by_id
 
@@ -94,4 +95,33 @@ def delete_category(*, category_id: int):
         raise NotFound("category not found")
     
     category.delete()
+
+# _____________________________________________________________subsciption updatd ->
+
+def update_sub(*, data: dict, sub:Subscription) -> Post:
+    for key, value in data.items():
+        setattr(sub, key, value)
+
+    sub.save(update_fields=data.keys())
+
+def full_update_sub(*, data:dict, subscription_id: int):
+    sub = get_subscription_by_id(sub_id=subscription_id).first()
+    if not sub:
+        raise NotFound("category not found")
+    
+    return update_sub(data=data, sub=sub)
+
+def partial_update_sub(*, data:dict, subscription_id: int):
+    sub = get_subscription_by_id(sub_id=subscription_id).first()
+    if not sub:
+        raise NotFound("category not found")
+    
+    return update_sub(data=data, sub=sub)
+
+def delete_sub(*, subscription_id: int):
+    sub = get_subscription_by_id(sub_id=subscription_id).first()
+    if not sub:
+        raise NotFound("category not found")
+    
+    sub.delete()
 
