@@ -1,5 +1,5 @@
 
-from posts.models import Post
+from posts.models import Comments, Post
 from posts.models import FavoritPost
 from posts.selectors.subscription import get_user_subscription_with_user
 from users.models import BaseUserModel
@@ -56,5 +56,13 @@ def get_list_post_liks(*, post_id: int) -> QuerySet[FavoritPost]:
     if not post:
         return NotFound("post not found")
     return FavoritPost.objects.filter(
+        post=post
+    ).all()
+
+def get_post_comments_list(*, post_id: int) -> QuerySet[Comments]:
+    post = get_post_by_id(post_id=post_id).first()
+    if not post:
+        return NotFound("post not found")
+    return Comments.objects.filter(
         post=post
     ).all()

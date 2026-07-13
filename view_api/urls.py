@@ -1,5 +1,7 @@
 from django.urls import path, include
 
+from view_api.apps_api.posts.category.post_categoy_apis import CategoryListCreateAPIView
+from view_api.apps_api.posts.comments.post_comment_apis import PostCommentListCreateAPIView
 from view_api.apps_api.posts.likes.like_apis import PostLikeListCreateAPIView
 from view_api.apps_api.posts.post.id.post_id_apis import PostRetrieveUpdateDestroyAPIView
 from view_api.apps_api.posts.post.post_apis import PostListCreateAPIView
@@ -8,6 +10,8 @@ from view_api.apps_api.users.profile.user_profile_apis import ProfileAPIView
 from view_api.apps_api.users.user.id.user_id_apis import UserRetrieveUpdatadeDestroy
 from view_api.apps_api.users.user.user_apis import UserListCreate
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView, TokenVerifyView
+
+from view_api.apps_api.posts.category.id.category_id_apis import CategoryRetrieveUpdateDstroyAPIView
 
 
 app_name = "api"
@@ -24,6 +28,9 @@ urlpatterns = [
     path(route="register/verify/", view=VerifyOtpAPIView.as_view(), name="verify"),
     path(route="profile/<int:user_id>/", view=ProfileAPIView.as_view(), name="profile"),
     path(route="posts/", view=PostListCreateAPIView.as_view(), name="post-list-create"),
-    path(route="posts/<int:post_id>", view=PostRetrieveUpdateDestroyAPIView.as_view(), name="post-detail"),
-    path(route="likes/<int:post_id>", view=PostLikeListCreateAPIView.as_view(), name="post-likes"),
+    path(route="posts/<int:post_id>/", view=PostRetrieveUpdateDestroyAPIView.as_view(), name="post-detail"),
+    path(route="likes/<int:post_id>/", view=PostLikeListCreateAPIView.as_view(), name="post-likes"),
+    path(route="comments/<int:post_id>/", view=PostCommentListCreateAPIView.as_view(), name="post-comments"),
+    path(route="categories/", view=CategoryListCreateAPIView.as_view(), name="category-list-create"),
+    path(route="categories/<int:category_id>/", view=CategoryRetrieveUpdateDstroyAPIView.as_view(), name="category-detail"),
 ]

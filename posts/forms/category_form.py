@@ -32,5 +32,4 @@ class CategoryModelForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-        # مرتب‌سازی درختی دسته‌بندی‌ها
         self.fields["parent"].queryset = Category.objects.all()
