@@ -3,6 +3,7 @@ from django.urls import path, include
 from view_api.apps_api.posts.category.post_categoy_apis import CategoryListCreateAPIView
 from view_api.apps_api.posts.comments.post_comment_apis import PostCommentListCreateAPIView
 from view_api.apps_api.posts.likes.like_apis import PostLikeListCreateAPIView
+from view_api.apps_api.posts.pay.pay_apis import SubscriptionPaymentAPIView, SubscriptionVerifyAPIView
 from view_api.apps_api.posts.post.id.post_id_apis import PostRetrieveUpdateDestroyAPIView
 from view_api.apps_api.posts.post.post_apis import PostListCreateAPIView
 from view_api.apps_api.posts.subscription.id.subscription_id_apis import SubscriptionRetrieveUpdateDstroyAPIView
@@ -38,4 +39,15 @@ urlpatterns = [
     path(route="categories/<int:category_id>/", view=CategoryRetrieveUpdateDstroyAPIView.as_view(), name="category-detail"),
     path(route="subscriptions/", view=SubscriptionListCreateAPIView.as_view(), name="subscription-list-create"),
     path(route="subscriptions/<int:subscription_id>/", view=SubscriptionRetrieveUpdateDstroyAPIView.as_view(), name="subscription-detail"),
+    path(
+    "subscriptions/<int:subscription_id>/pay/",
+    SubscriptionPaymentAPIView.as_view(),
+    name="subscription-pay",
+),
+
+path(
+    "subscriptions/verify/",
+    SubscriptionVerifyAPIView.as_view(),
+    name="subscription-verify",
+),
 ]
