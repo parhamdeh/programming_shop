@@ -2,6 +2,9 @@ from rest_framework.permissions import BasePermission
 from rest_framework.request import Request
 from rest_framework.views import APIView
 
+from django.utils import timezone
+from posts.models import UserSubscription
+
 
 class ProfilePermission(BasePermission):
     message = "You do not have permission to modify this profile."
@@ -43,4 +46,25 @@ class UserChangeIfAdminOrSelfUser(BasePermission):
             request.user.is_authenticated
             and request.user.id == user_id
         )
+    
+class PremiumPostPermission(BasePermission):
+
+    message = "Active subscription required."
+
+    def has_object_permission(self, request, view, obj):
+        if request.user.is_staff:
+            return True
+        
+        if request.method.lower() == "get":
+
+            if not obj.is_premium:
+                return True
+
+            return UserSubscription.objects.filter(
+                user=request.user,
+                is_active=True,
+                end_date__gt=timezone.now(),
+            ).exists()
+        
+        return False
     

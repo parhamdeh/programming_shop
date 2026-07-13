@@ -14,7 +14,7 @@ from posts.selectors.post_detail import get_post_by_id
 from posts.services.post import create_post, delete_post, full_update, partial_update
 from view_api.apps_api.posts.post.post_serializers import PostOutputModelSerializer, PostsInputModelSerializer
 from view_api.pagination import ProductsPagination, UsersPagination
-from view_api.permissions import IsAdminOrReadOnly
+from view_api.permissions import IsAdminOrReadOnly, PremiumPostPermission
 from view_api.throttle import AdminRequestThrottle, UserRequestThrottle
 from view_api.apps_api.users.user.users_serializer import UserInputSerializer, UserOutputModelSerializer
 
@@ -27,7 +27,7 @@ logger = logging.getLogger(__name__)
 
 
 class PostRetrieveUpdateDestroyAPIView(APIView):
-    permission_classes = (IsAdminOrReadOnly,)
+    permission_classes = (PremiumPostPermission,)
     throttle_classes = (UserRequestThrottle,)
 
     @extend_schema(
