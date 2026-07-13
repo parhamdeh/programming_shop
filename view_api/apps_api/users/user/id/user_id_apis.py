@@ -2,14 +2,14 @@ from rest_framework.request import Request
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from rest_framework.permissions import IsAdminUser
 from rest_framework.exceptions import NotFound
 
+from view_api.permissions import UserChangeIfAdminOrSelfUser
 from view_api.throttle import AdminRequestThrottle
 from view_api.apps_api.users.user.users_serializer import UserInputSerializer, UserOutputModelSerializer
 
-from users.services.user_services import delete_user, full_update, partial_update, register
-from users.selectors.user_selector import get_user_by_id, get_users_list
+from users.services.user_services import delete_user, full_update, partial_update
+from users.selectors.user_selector import get_user_by_id
 
 from drf_spectacular.utils import (
     extend_schema,
@@ -26,7 +26,7 @@ class UserRetrieveUpdatadeDestroy(APIView):
     Retrieve, update or delete a user.
     """
 
-    permission_classes = (IsAdminUser,)
+    permission_classes = (UserChangeIfAdminOrSelfUser,)
     throttle_classes = (AdminRequestThrottle,)
 
     @extend_schema(

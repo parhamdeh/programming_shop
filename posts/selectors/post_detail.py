@@ -4,8 +4,9 @@ from posts.models import FavoritPost
 from posts.selectors.subscription import get_user_subscription_with_user
 from users.models import BaseUserModel
 from django.core.exceptions import ObjectDoesNotExist
-
+from django.db.models import QuerySet
 from users.selectors.user_selector import get_user_by_id
+from rest_framework.exceptions import NotFound
 
 
 
@@ -27,8 +28,7 @@ def get_related_posts(post:Post) -> Post:
     )
 
 def get_post_by_id(post_id:int) -> Post:
-    return Post.objects.get(id=post_id)
-
+    return Post.objects.filter(id=post_id)
 
 def check_favorit(user:BaseUserModel, post:Post) -> bool:
 
@@ -50,4 +50,11 @@ def check_post_is_premium(*, post_id: int, user_id: int) -> bool:
     
     has_subscription = get_user_subscription_with_user(user_id=user_id).exists()
     return has_subscription
-        
+
+def get_list_post_liks(*, post_id: int) -> QuerySet[FavoritPost]:
+    post = get_post_by_id(post_id=post_id).first()
+    if not post:
+        return NotFound("post not found")
+    return FavoritPost.objects.filter(
+        post=post
+    ).all()

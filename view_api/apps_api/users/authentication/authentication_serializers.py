@@ -8,8 +8,12 @@ class RegisterInputSerializer(serializers.Serializer):
         region="IR",
     )
     password = serializers.CharField(max_length=128)
+    confirm_password = serializers.CharField(max_length=128)
 
     def validate(self, attrs: dict):
+        if attrs["password"] != attrs["confirm_password"]:
+            raise serializers.ValidationError("passwords must be match")
+        attrs.pop("confirm_password")
         
         phone = attrs.get("phone")
         if phone and len(str(phone).replace("+98", "0")) > 11:

@@ -1,8 +1,25 @@
 from rest_framework.permissions import BasePermission
+from rest_framework.request import Request
+from rest_framework.views import APIView
 
+
+class ProfilePermission(BasePermission):
+    message = "You do not have permission to modify this profile."
+
+    def has_permission(self, request: Request, view: APIView) -> bool:
+        user_id = view.kwargs.get("user_id")
+
+        return (
+            request.user.is_authenticated
+            and request.user.id == user_id
+        )
 
 class IsAdminOrReadOnly(BasePermission):
-    def has_permission(self, request, view):
+    """
+    permission class for ProductUpdateRetrieveDestroy, ProductListCreate endpoints APIView ->
+    if request.user.is_staff = True user can create product, change details or delete it.
+    """
+    def has_permission(self, request: Request, view: APIView) -> bool:
         if request.method.lower() == "get":
             return True
         
@@ -11,4 +28,19 @@ class IsAdminOrReadOnly(BasePermission):
         
         return False
     
+class UserChangeIfAdminOrSelfUser(BasePermission):
+    """
+    permission class for UserUpdateRetrieveDestroy APIView ->
+    if user.id = user_id user can change details or delete it 
+    """
+    def has_permission(self, request: Request, view: APIView) -> bool:
+        user_id = view.kwargs.get("user_id")
+
+        if request.user.is_staff:
+            return True
+        
+        return (
+            request.user.is_authenticated
+            and request.user.id == user_id
+        )
     

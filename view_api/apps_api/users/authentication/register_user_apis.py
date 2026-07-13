@@ -148,6 +148,7 @@ class VerifyOtpAPIView(APIView):
             user = register(
             username=register_data["username"],
             password=register_data["password"],
+            phone=register_data["phone"],
             subscription=None,
             )
 
