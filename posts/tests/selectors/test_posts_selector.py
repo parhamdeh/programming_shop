@@ -34,7 +34,7 @@ class TestGetPostDetail:
     def test_get_post_by_id(self):
         post = PostFactory()
 
-        result = get_post_by_id(post.id)
+        result = get_post_by_id(post.id).first()
 
         assert result == post
 

@@ -41,7 +41,7 @@ def check_favorit(user:BaseUserModel, post:Post) -> bool:
     return True
 
 def check_post_is_premium(*, post_id: int, user_id: int) -> bool:
-    post = get_post_by_id(post_id=post_id)
+    post = get_post_by_id(post_id=post_id).first()
     if post.author.id == user_id:
         return True
     is_premium = Post.objects.filter(is_premium=True, id=post_id).exists()

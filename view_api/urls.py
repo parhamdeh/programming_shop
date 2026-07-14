@@ -29,7 +29,7 @@ urlpatterns = [
     path(route="users/", view=UserListCreate.as_view(), name="user-list-create"),
     path(route="users/<int:user_id>/", view=UserRetrieveUpdatadeDestroy.as_view(), name="user-detail"),
     path(route="register/", view=RegisterUserAPIView.as_view(), name="register"),
-    path(route="register/verify/", view=VerifyOtpAPIView.as_view(), name="verify"),
+    path(route="register/verify/", view=VerifyOtpAPIView.as_view(), name="verify-code"),
     path(route="profile/<int:user_id>/", view=ProfileAPIView.as_view(), name="profile"),
     path(route="posts/", view=PostListCreateAPIView.as_view(), name="post-list-create"),
     path(route="posts/<int:post_id>/", view=PostRetrieveUpdateDestroyAPIView.as_view(), name="post-detail"),

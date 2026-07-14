@@ -13,7 +13,7 @@ from drf_spectacular.utils import (
 from posts.selectors.subscription import get_subscription_by_id
 from posts.services.post import delete_sub, full_update_sub, partial_update_sub
 from view_api.apps_api.posts.subscription.subscription_serializers import SubscriptionInputSerializer, SubscriptionOutputModelSerializer
-from view_api.permissions import BuySubscriptionPermission
+from view_api.permissions import BuySubscriptionPermission, IsAdminOrReadOnly
 from view_api.throttle import AdminRequestThrottle
 
 import logging
@@ -24,7 +24,7 @@ logger = logging.getLogger(__name__)
 
 class SubscriptionRetrieveUpdateDstroyAPIView(APIView):
     throttle_classes = (AdminRequestThrottle,)
-    permission_classes = (BuySubscriptionPermission, IsAuthenticated)
+    permission_classes = (IsAdminOrReadOnly, IsAuthenticated)
 
     @extend_schema(
     summary="Retrieve Subscription",
