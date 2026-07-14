@@ -51,7 +51,7 @@ class PremiumPostPermission(BasePermission):
 
     message = "Active subscription required."
 
-    def has_object_permission(self, request, view, obj):
+    def has_object_permission(self, request: Request, view: APIView, obj) -> bool:
         if request.user.is_staff:
             return True
         
@@ -66,5 +66,22 @@ class PremiumPostPermission(BasePermission):
                 end_date__gt=timezone.now(),
             ).exists()
         
+        return False
+    
+
+class BuySubscriptionPermission(BasePermission):
+    def has_object_permission(self, request: Request, view: APIView, obj) -> bool:
+        if request.user.is_staff:
+            return True
+        
+        if request.method.lower() == "get":
+            user_subscription = UserSubscription.objects.filter(
+                user=request.user,
+                is_active=True,
+                end_date__gt=timezone.now(),
+            ).exists()
+            if not user_subscription:
+                return True
+
         return False
     

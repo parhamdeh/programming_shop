@@ -3,6 +3,7 @@ from django.db.models import QuerySet
 
 from posts.models import Post
 from posts.models import UserSubscription
+from view_api.exceptions import SubscriptionExpiredError
 
 
 def get_user_subscription_detail(*, request: HttpRequest) -> UserSubscription | None:
@@ -14,7 +15,7 @@ def get_user_subscription_detail(*, request: HttpRequest) -> UserSubscription | 
         return None
     if subscription.remaining_days == 0:
         subscription.delete()
-        return None
+        raise SubscriptionExpiredError()
     return subscription
 
 

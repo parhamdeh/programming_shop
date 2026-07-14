@@ -17,7 +17,8 @@ from view_api.apps_api.posts.comments.comment_serializers import PostCommentInpu
 from view_api.apps_api.posts.likes.like_serilizers import PostLiksOutputModelSerializer
 from view_api.apps_api.posts.post.post_serializers import PostOutputModelSerializer, PostsInputModelSerializer
 from view_api.pagination import ProductsPagination
-from view_api.throttle import AdminRequestThrottle, UserRequestThrottle
+from view_api.permissions import PremiumPostPermission
+from view_api.throttle import UserRequestThrottle
 from view_api.apps_api.users.user.users_serializer import UserInputSerializer, UserOutputModelSerializer
 
 from users.services.user_services import register

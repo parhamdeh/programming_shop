@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     "ckeditor",
     "rest_framework",
     "drf_spectacular",
+    "django_elasticsearch_dsl",
     "mptt",
     'users',
     'posts',
@@ -195,7 +196,7 @@ SPECTACULAR_SETTINGS = {
 from datetime import timedelta
 
 SIMPLE_JWT = {
-    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=30),
+    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=90),
     "REFRESH_TOKEN_LIFETIME": timedelta(days=7),
 
     "ROTATE_REFRESH_TOKENS": True,
@@ -217,5 +218,10 @@ SIMPLE_JWT = {
     "JTI_CLAIM": "jti",
 }
 
+ELASTICSEARCH_DSL = {
+    "default": {
+        "hosts": "http://localhost:9200",
+    },
+}
 from config.logging import LOGGING
 

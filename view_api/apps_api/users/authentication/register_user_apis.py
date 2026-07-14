@@ -16,6 +16,7 @@ from users.models import OtpCode
 from users.services.otp_services import create_otp_code
 from users.tasks import delete_otp_task, send_otp_task
 from view_api.apps_api.users.authentication.authentication_serializers import RefreshTokenOutputSerializer, RegisterInputSerializer, VerifyOtpSerializer
+from view_api.exceptions import OTPExpiredError
 from view_api.pagination import UsersPagination
 from view_api.throttle import AdminRequestThrottle, UserRequestThrottle
 from view_api.apps_api.users.user.users_serializer import UserInputSerializer, UserOutputModelSerializer
@@ -129,11 +130,7 @@ class VerifyOtpAPIView(APIView):
             otp.phone,
             )
             otp.delete()
-
-            return Response(
-                {"detail": "Verification code has expired."},
-                status=status.HTTP_400_BAD_REQUEST,
-            )
+            raise OTPExpiredError()
         
         if register_data is None:
             return Response(

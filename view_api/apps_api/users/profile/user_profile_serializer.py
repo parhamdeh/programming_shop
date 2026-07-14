@@ -1,7 +1,7 @@
 from rest_framework import serializers
 
 from view_api.apps_api.posts.post.post_serializers import PostOutputModelSerializer
-from view_api.apps_api.posts.subscription.subscription_serializers import SubscriptionOutputModelSerializer, UserSubscriptionOutputSerializer
+from view_api.apps_api.posts.subscription.subscription_serializers import  UserSubscriptionOutputSerializer
 
 
 

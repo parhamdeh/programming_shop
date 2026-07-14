@@ -1,5 +1,6 @@
 from django.urls import path, include
 
+from view_api.apps_api.home.home_apis import HomeAPIview
 from view_api.apps_api.posts.category.post_categoy_apis import CategoryListCreateAPIView
 from view_api.apps_api.posts.comments.post_comment_apis import PostCommentListCreateAPIView
 from view_api.apps_api.posts.likes.like_apis import PostLikeListCreateAPIView
@@ -8,6 +9,7 @@ from view_api.apps_api.posts.post.id.post_id_apis import PostRetrieveUpdateDestr
 from view_api.apps_api.posts.post.post_apis import PostListCreateAPIView
 from view_api.apps_api.posts.subscription.id.subscription_id_apis import SubscriptionRetrieveUpdateDstroyAPIView
 from view_api.apps_api.posts.subscription.subscription_apis import SubscriptionListCreateAPIView
+from view_api.apps_api.search.search_apis import SearchAPIView
 from view_api.apps_api.users.authentication.register_user_apis import RegisterUserAPIView, VerifyOtpAPIView
 from view_api.apps_api.users.profile.user_profile_apis import ProfileAPIView
 from view_api.apps_api.users.user.id.user_id_apis import UserRetrieveUpdatadeDestroy
@@ -45,9 +47,15 @@ urlpatterns = [
     name="subscription-pay",
 ),
 
-path(
-    "subscriptions/verify/",
-    SubscriptionVerifyAPIView.as_view(),
-    name="subscription-verify",
-),
+    path(
+        "subscriptions/verify/",
+        SubscriptionVerifyAPIView.as_view(),
+        name="subscription-verify",
+    ),
+    path(
+        "posts/search/",
+        SearchAPIView.as_view(),
+        name="post-search",
+    ),
+    path(route="", view=HomeAPIview.as_view(), name="home")
 ]
