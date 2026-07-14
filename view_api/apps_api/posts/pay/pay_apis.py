@@ -23,6 +23,7 @@ from view_api.apps_api.posts.pay.pay_serializers import (
     SubscriptionPaymentOutputSerializer,
     SubscriptionVerifyOutputSerializer,
 )
+from view_api.permissions import BuySubscriptionPermission
 
 logger = logging.getLogger(__name__)
 
@@ -34,7 +35,7 @@ CALLBACK_URL = "http://127.0.0.1:8000/api/subscriptions/verify/"
 
 class SubscriptionPaymentAPIView(APIView):
 
-    permission_classes = (IsAuthenticated,)
+    permission_classes = (BuySubscriptionPermission,)
 
     @extend_schema(
         summary="Create payment",
@@ -46,17 +47,10 @@ class SubscriptionPaymentAPIView(APIView):
     )
     def post(self, request: Request, subscription_id: int):
 
-        subscription = get_subscription_by_id(
-            sub_id=subscription_id
-        ).first()
+        subscription = get_subscription_by_id(sub_id=subscription_id).first()
 
         if not subscription:
-            logger.warning("subscription not found")
             raise NotFound("subscription not found")
-
-        request.session["subscription"] = {
-            "subscription_id": subscription.id,
-        }
 
         payload = {
             "merchant_id": settings.MERCHANT,
@@ -74,51 +68,52 @@ class SubscriptionPaymentAPIView(APIView):
         }
 
         try:
-
             response = requests.post(
                 ZP_API_REQUEST,
                 json=payload,
                 headers=headers,
                 timeout=10,
             )
-
-            logger.info("payment request sent")
+            result = response.json()
 
         except requests.RequestException:
-
-            logger.exception("connection error")
+            logger.exception("payment gateway unavailable")
 
             return Response(
-                {
-                    "message": "payment gateway unavailable",
-                },
+                {"message": "payment gateway unavailable"},
                 status=status.HTTP_503_SERVICE_UNAVAILABLE,
             )
 
-        result = response.json()
+        logger.info(result)
 
-        if result["data"]["code"] != 100:
+        data = result.get("data", {})
+        errors = result.get("errors", {})
 
-            logger.warning("payment request failed")
+        if data.get("code") != 100:
 
             return Response(
                 {
-                    "message": "payment failed",
+                    "success": False,
+                    "errors": errors,
                 },
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
-        authority = result["data"]["authority"]
+        authority = data["authority"]
 
-        logger.info("payment created")
+        request.session["subscription"] = {
+            "subscription_id": subscription.id,
+            "authority": authority,
+        }
 
         return Response(
             {
-                "payment_url":
-                    f"{ZP_API_STARTPAY}{authority}"
+                "success": True,
+                "authority": authority,
+                "payment_url": f"{ZP_API_STARTPAY}{authority}",
             }
         )
-    
+        
 class SubscriptionVerifyAPIView(APIView):
 
     permission_classes = (IsAuthenticated,)
@@ -135,13 +130,9 @@ class SubscriptionVerifyAPIView(APIView):
     )
     def get(self, request: Request):
 
-        sub_id = request.session.get(
-            "subscription",
-            {}
-        ).get("subscription_id")
+        payment = request.session.get("subscription")
 
-        if not sub_id:
-
+        if not payment:
             return Response(
                 {
                     "success": False,
@@ -150,14 +141,37 @@ class SubscriptionVerifyAPIView(APIView):
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
+        status_param = request.GET.get("Status")
+        authority = request.GET.get("Authority")
+        print(request.GET)
+        print(request.GET.get("Status"))
+        print(request.GET.get("Authority"))
+        if status_param != "OK":
+            return Response(
+                {
+                    "success": False,
+                    "message": "payment cancelled",
+                },
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        if authority != payment["authority"]:
+            return Response(
+                {
+                    "success": False,
+                    "message": "invalid authority",
+                },
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
         subscription = get_subscription_by_id(
-            sub_id=sub_id
+            sub_id=payment["subscription_id"]
         ).first()
 
         payload = {
             "merchant_id": settings.MERCHANT,
             "amount": subscription.price,
-            "authority": request.GET.get("Authority"),
+            "authority": authority,
         }
 
         headers = {
@@ -165,44 +179,53 @@ class SubscriptionVerifyAPIView(APIView):
             "content-type": "application/json",
         }
 
-        response = requests.post(
-            ZP_API_VERIFY,
-            json=payload,
-            headers=headers,
-            timeout=10,
-        )
+        try:
+            response = requests.post(
+                ZP_API_VERIFY,
+                json=payload,
+                headers=headers,
+                timeout=10,
+            )
+            print(response.status_code)
+            print(response.text)
 
-        result = response.json()
+            result = response.json()
 
-        if result["data"]["code"] == 100:
-
-            create_user_subscription(
-                user=request.user,
-                subscription=subscription,
+        except requests.RequestException:
+            return Response(
+                {
+                    "success": False,
+                    "message": "gateway unavailable",
+                },
+                status=status.HTTP_503_SERVICE_UNAVAILABLE,
             )
 
-            ref_id = result["data"]["ref_id"]
+        logger.info(result)
 
-            logger.info(
-                f"payment success ref={ref_id}"
-            )
+        data = result.get("data", {})
+        errors = result.get("errors", {})
 
-            del request.session["subscription"]
+        if data.get("code") != 100:
 
             return Response(
                 {
-                    "success": True,
-                    "ref_id": ref_id,
-                    "message": "payment successful",
-                }
+                    "success": False,
+                    "errors": errors,
+                },
+                status=status.HTTP_400_BAD_REQUEST,
             )
 
-        logger.warning("payment verify failed")
+        create_user_subscription(
+            user=request.user,
+            subscription=subscription,
+        )
+
+        request.session.pop("subscription", None)
 
         return Response(
             {
-                "success": False,
-                "message": "payment failed",
-            },
-            status=status.HTTP_400_BAD_REQUEST,
+                "success": True,
+                "ref_id": data.get("ref_id"),
+                "message": "payment successful",
+            }
         )

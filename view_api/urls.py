@@ -9,7 +9,6 @@ from view_api.apps_api.posts.post.id.post_id_apis import PostRetrieveUpdateDestr
 from view_api.apps_api.posts.post.post_apis import PostListCreateAPIView
 from view_api.apps_api.posts.subscription.id.subscription_id_apis import SubscriptionRetrieveUpdateDstroyAPIView
 from view_api.apps_api.posts.subscription.subscription_apis import SubscriptionListCreateAPIView
-from view_api.apps_api.search.search_apis import SearchAPIView
 from view_api.apps_api.users.authentication.register_user_apis import RegisterUserAPIView, VerifyOtpAPIView
 from view_api.apps_api.users.profile.user_profile_apis import ProfileAPIView
 from view_api.apps_api.users.user.id.user_id_apis import UserRetrieveUpdatadeDestroy
@@ -17,7 +16,6 @@ from view_api.apps_api.users.user.user_apis import UserListCreate
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView, TokenVerifyView
 
 from view_api.apps_api.posts.category.id.category_id_apis import CategoryRetrieveUpdateDstroyAPIView
-from view_api.tests.posts.subscription.test_subscription_apis import SubscriptionListCreateAPIViewTest
 
 
 app_name = "api"
@@ -46,16 +44,10 @@ urlpatterns = [
     SubscriptionPaymentAPIView.as_view(),
     name="subscription-pay",
 ),
-
     path(
         "subscriptions/verify/",
         SubscriptionVerifyAPIView.as_view(),
         name="subscription-verify",
-    ),
-    path(
-        "posts/search/",
-        SearchAPIView.as_view(),
-        name="post-search",
     ),
     path(route="", view=HomeAPIview.as_view(), name="home")
 ]

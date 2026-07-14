@@ -1,118 +1,353 @@
-# Django Programming Course Platform
+# Programming Course Platform API
 
-A Django-based platform for programming video courses, where users purchase a subscription to gain access to watch the videos.
+A Django REST Framework based platform for selling programming courses with a subscription system. Users can register, purchase subscriptions, and access premium course content through REST APIs.
 
-## ✨ Features
+---
 
-- 🔐 User authentication
-- 📝 Course & video content management
-- 💳 Subscription-based access — users must subscribe to watch videos
-- 👤 User profiles with public/private visibility (`is_private`)
-- 🔒 Access control on content based on subscription status
-- ✅ Full test coverage with `pytest-django` and `factory_boy`
+# ✨ Features
 
-## 🏗 Architecture
+- 🔐 JWT Authentication
+- 👤 User Registration with OTP Verification
+- 👥 User Management
+- 📝 Programming Posts (CRUD)
+- 📂 Categories (Tree Structure using django-mptt)
+- 💬 Comments
+- ❤️ Likes
+- 💳 Subscription Plans
+- 💰 Subscription Payment (ZarinPal Sandbox)
+- 🔒 Premium Post Access Control
+- 👤 Public / Private User Profiles
+- 📖 Interactive Swagger Documentation
+- ✅ Unit & API Tests
 
-The project follows a **Service Layer** architecture, separating concerns across distinct layers:
+---
 
-- **Selectors** — handle read/query logic
-- **Services** — handle business logic and write operations
-- **Models** — define the data structure
-- **Views** — handle request/response and delegate to services/selectors
+# 🏗 Architecture
 
-This separation keeps business logic decoupled from the views and database access, making the codebase easier to test and maintain.
+The project follows the **Service Layer Architecture**.
 
-## 🛠 Tech Stack
+```
+Request
+   │
+   ▼
+Views (APIView)
+   │
+   ├────────► Selectors (Read Operations)
+   │
+   └────────► Services (Business Logic)
+                    │
+                    ▼
+                 Models
+```
 
-| Layer | Tool |
-|---|---|
-| Framework | Django 6.0.6 |
+### Project Layers
+
+- **Views** → Handle HTTP Requests & Responses
+- **Selectors** → Database Read Operations
+- **Services** → Business Logic
+- **Models** → Database Models
+- **Serializers** → Validation & Serialization
+
+---
+
+# 🛠 Tech Stack
+
+| Layer | Technology |
+|--------|------------|
+| Framework | Django |
+| API | Django REST Framework |
+| Documentation | drf-spectacular (Swagger) |
 | Database | PostgreSQL |
-| Testing | pytest, pytest-django, factory-boy, Faker |
-| Language | Python 3.14+ |
+| Authentication | JWT (SimpleJWT) |
+| Payment Gateway | ZarinPal Sandbox |
+| Testing | pytest, pytest-django, factory-boy |
+| Language | Python 3.14 |
 
-## ⚙️ Prerequisites
+---
 
-- Python 3.14+
-- PostgreSQL 16+
-- pip / virtualenv
+# 🚀 Installation
 
-## 🚀 Installation & Setup
-
-### 1. Clone the repository
+## Clone Repository
 
 ```bash
 git clone https://github.com/parhamdeh/programming_shop.git
+
+cd programming_shop
 ```
 
-### 2. Create and activate a virtual environment
+---
+
+## Create Virtual Environment
+
+Windows
 
 ```bash
 python -m venv venv
 
-# Windows
 venv\Scripts\activate
+```
 
-# Linux / macOS
+Linux / macOS
+
+```bash
+python -m venv venv
+
 source venv/bin/activate
 ```
 
-### 3. Install dependencies
+---
+
+## Install Packages
 
 ```bash
 pip install -r requirements.txt
 ```
 
-### 4. Set environment variables
+---
 
-Create a `.env` file in the project root:
+## Environment Variables
+
+Create `.env`
 
 ```env
 DEBUG=True
-SECRET_KEY=your-secret-key-here
+
+SECRET_KEY=your-secret-key
 
 DB_ENGINE=django.db.backends.postgresql
-DB_NAME=mydatabase
-DB_USER=myuser
-DB_PASSWORD=mypassword
+
+DB_NAME=programming_shop
+
+DB_USER=postgres
+
+DB_PASSWORD=password
+
 DB_HOST=localhost
+
 DB_PORT=5432
+
+MERCHANT=xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
 ```
 
-### 5. Run migrations
+---
+
+## Migrate
 
 ```bash
 python manage.py migrate
 ```
 
-### 6. Create a superuser (optional)
+---
+
+## Create Superuser
 
 ```bash
 python manage.py createsuperuser
 ```
 
-### 7. Run the development server
+---
+
+## Run Server
 
 ```bash
 python manage.py runserver
 ```
 
-The project will be available at `http://127.0.0.1:8000/`.
+---
 
-## 🧪 Running Tests
+# 📖 API Documentation
+
+Swagger UI
+
+```
+/api/schema/swagger-ui/
+```
+
+OpenAPI Schema
+
+```
+/api/schema/
+```
+
+---
+
+# 🔑 Authentication APIs
+
+| Method | Endpoint | Description |
+|---------|----------|-------------|
+| POST | `/api/jwt/login/` | Get Access & Refresh Token |
+| POST | `/api/jwt/refresh/` | Refresh Access Token |
+| POST | `/api/jwt/verify/` | Verify JWT Token |
+
+---
+
+# 👤 User APIs
+
+| Method | Endpoint |
+|---------|----------|
+| GET | `/api/users/` |
+| POST | `/api/users/` |
+| GET | `/api/users/{id}/` |
+| PUT | `/api/users/{id}/` |
+| PATCH | `/api/users/{id}/` |
+| DELETE | `/api/users/{id}/` |
+
+---
+
+# 📝 Registration
+
+| Method | Endpoint |
+|---------|----------|
+| POST | `/api/register/` |
+| POST | `/api/register/verify/` |
+
+---
+
+# 👤 Profile
+
+| Method | Endpoint |
+|---------|----------|
+| GET | `/api/profile/{id}/` |
+
+---
+
+# 📚 Posts
+
+| Method | Endpoint |
+|---------|----------|
+| GET | `/api/posts/` |
+| POST | `/api/posts/` |
+| GET | `/api/posts/{id}/` |
+| PUT | `/api/posts/{id}/` |
+| PATCH | `/api/posts/{id}/` |
+| DELETE | `/api/posts/{id}/` |
+
+---
+
+# ❤️ Likes
+
+| Method | Endpoint |
+|---------|----------|
+| GET | `/api/likes/{post_id}/` |
+| POST | `/api/likes/{post_id}/` |
+
+---
+
+# 💬 Comments
+
+| Method | Endpoint |
+|---------|----------|
+| GET | `/api/comments/{post_id}/` |
+| POST | `/api/comments/{post_id}/` |
+
+---
+
+# 📂 Categories
+
+| Method | Endpoint |
+|---------|----------|
+| GET | `/api/categories/` |
+| POST | `/api/categories/` |
+| GET | `/api/categories/{id}/` |
+| PUT | `/api/categories/{id}/` |
+| PATCH | `/api/categories/{id}/` |
+| DELETE | `/api/categories/{id}/` |
+
+---
+
+# 💳 Subscription Plans
+
+| Method | Endpoint |
+|---------|----------|
+| GET | `/api/subscriptions/` |
+| POST | `/api/subscriptions/` |
+| GET | `/api/subscriptions/{id}/` |
+| PUT | `/api/subscriptions/{id}/` |
+| PATCH | `/api/subscriptions/{id}/` |
+| DELETE | `/api/subscriptions/{id}/` |
+
+---
+
+# 💰 Subscription Payment
+
+| Method | Endpoint |
+|---------|----------|
+| POST | `/api/subscriptions/{id}/pay/` |
+| GET | `/api/subscriptions/verify/` |
+
+---
+
+# 🏠 Home
+
+| Method | Endpoint |
+|---------|----------|
+| GET | `/api/` |
+
+Returns:
+
+- Latest Posts
+- Categories
+- Subscription Plans
+
+---
+
+# 🔒 Permissions
+
+| Resource | Permission |
+|-----------|------------|
+| Users | Authenticated |
+| Posts | Admin CRUD / Public Read |
+| Categories | Admin CRUD / Authenticated Read |
+| Subscriptions | Admin CRUD / Authenticated Read |
+| Premium Posts | Active Subscription Required |
+| Payment | Authenticated Users |
+
+---
+
+# 🧪 Running Tests
+
+Run all tests
 
 ```bash
 pytest
 ```
 
-Run tests with coverage report:
+Coverage
 
 ```bash
 pytest --cov=.
 ```
 
-Run a specific test file:
+Specific test
 
 ```bash
-pytest blog_version2/tests/test_selectors/test_posts_selectors.py
+pytest path/to/test_file.py
 ```
+
+---
+
+# 📂 Project Structure
+
+```
+posts/
+    selectors/
+    services/
+    models.py
+
+users/
+    selectors/
+    services/
+
+view_api/
+    apps_api/
+    permissions.py
+    throttle.py
+
+config/
+```
+
+---
+
+# 📜 License
+
+This project is intended for educational and portfolio purposes.

@@ -49,6 +49,8 @@ class PostRetrieveUpdateDestroyAPIView(APIView):
             logger.info(f"there is not post with {post_id}")
             raise NotFound("post not found")
         
+        self.check_object_permissions(request, post)
+        
         return Response(
             data=PostOutputModelSerializer(instance=post).data,
             status=status.HTTP_200_OK,
@@ -75,7 +77,7 @@ class PostRetrieveUpdateDestroyAPIView(APIView):
         except Exception as e:
             logger.exception(f"database error{e}")
             raise
-
+        
         return Response(
             data=PostOutputModelSerializer(instance=post).data,
             status=status.HTTP_200_OK,
