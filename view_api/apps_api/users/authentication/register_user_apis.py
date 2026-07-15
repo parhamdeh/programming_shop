@@ -18,6 +18,7 @@ from users.tasks import delete_otp_task, send_otp_task
 from view_api.apps_api.users.authentication.authentication_serializers import RefreshTokenOutputSerializer, RegisterInputSerializer, VerifyOtpSerializer
 from view_api.exceptions import OTPExpiredError
 from view_api.pagination import UsersPagination
+from view_api.renderers import CustomResponseRenderer
 from view_api.throttle import AdminRequestThrottle, UserRequestThrottle
 from view_api.apps_api.users.user.users_serializer import UserInputSerializer, UserOutputModelSerializer
 
@@ -44,6 +45,7 @@ logger = logging.getLogger(__name__)
     },
 )
 class RegisterUserAPIView(APIView):
+    renderer_classes = (CustomResponseRenderer,)
     permission_classes = (AllowAny,)
     throttle_classes = (UserRequestThrottle,)
 
@@ -87,6 +89,7 @@ class RegisterUserAPIView(APIView):
     },
 )
 class VerifyOtpAPIView(APIView):
+    renderer_classes = (CustomResponseRenderer,)
     permission_classes = (AllowAny,)
     throttle_classes = (UserRequestThrottle,)
 

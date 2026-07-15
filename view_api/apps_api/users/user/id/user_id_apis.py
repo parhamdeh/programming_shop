@@ -5,6 +5,7 @@ from rest_framework import status
 from rest_framework.exceptions import NotFound
 
 from view_api.permissions import UserChangeIfAdminOrSelfUser
+from view_api.renderers import CustomResponseRenderer
 from view_api.throttle import AdminRequestThrottle
 from view_api.apps_api.users.user.users_serializer import UserInputSerializer, UserOutputModelSerializer
 
@@ -25,7 +26,7 @@ class UserRetrieveUpdatadeDestroy(APIView):
     """
     Retrieve, update or delete a user.
     """
-
+    renderer_classes = (CustomResponseRenderer,)
     permission_classes = (UserChangeIfAdminOrSelfUser,)
     throttle_classes = (AdminRequestThrottle,)
 
@@ -36,7 +37,7 @@ Retrieve a single user by its unique identifier.
 
 Only administrators are allowed to access this endpoint.
         """,
-        tags=["Users"],
+        tags=["account"],
         responses={
             200: UserOutputModelSerializer,
             404: OpenApiResponse(description="User not found"),
@@ -62,7 +63,7 @@ Replace all editable fields of a user.
 
 All required fields must be provided.
         """,
-        tags=["Users"],
+        tags=["account"],
         request=UserInputSerializer,
         responses={
             200: UserOutputModelSerializer,
@@ -99,7 +100,7 @@ Update one or more fields of a user.
 
 Only the supplied fields will be modified.
         """,
-        tags=["Users"],
+        tags=["account"],
         request=UserInputSerializer,
         responses={
             200: UserOutputModelSerializer,
@@ -140,7 +141,7 @@ Delete a user permanently.
 
 This operation cannot be undone.
         """,
-        tags=["Users"],
+        tags=["account"],
         responses={
             204: OpenApiResponse(description="User deleted successfully"),
             404: OpenApiResponse(description="User not found"),

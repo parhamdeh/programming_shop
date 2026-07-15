@@ -3,10 +3,12 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.exceptions import NotFound
+from rest_framework.parsers import MultiPartParser, FormParser
 
 from drf_spectacular.utils import (
     extend_schema,
     OpenApiResponse,
+    OpenApiRequest
 )
 
 from posts.selectors.list_posts import get_all_posts
@@ -15,6 +17,7 @@ from posts.services.post import create_post, delete_post, full_update, partial_u
 from view_api.apps_api.posts.post.post_serializers import PostOutputModelSerializer, PostsInputModelSerializer
 from view_api.pagination import ProductsPagination, UsersPagination
 from view_api.permissions import IsAdminOrReadOnly, PremiumPostPermission
+from view_api.renderers import CustomResponseRenderer
 from view_api.throttle import AdminRequestThrottle, UserRequestThrottle
 from view_api.apps_api.users.user.users_serializer import UserInputSerializer, UserOutputModelSerializer
 
@@ -27,6 +30,8 @@ logger = logging.getLogger(__name__)
 
 
 class PostRetrieveUpdateDestroyAPIView(APIView):
+    renderer_classes = (CustomResponseRenderer,)
+    parser_classes = (MultiPartParser, FormParser)
     permission_classes = (PremiumPostPermission,)
     throttle_classes = (UserRequestThrottle,)
 
@@ -59,7 +64,14 @@ class PostRetrieveUpdateDestroyAPIView(APIView):
     @extend_schema(
     summary="Update Post",
     description="Fully update a post. Admin only.",
-    request=PostsInputModelSerializer,
+    
+    request=OpenApiRequest(
+        request=PostsInputModelSerializer,
+        encoding={
+            "image": {"contentType": "image/*"},
+            "video": {"contentType": "video/*"},
+        },
+    ),
     responses={
         200: PostOutputModelSerializer,
         400: OpenApiResponse(description="Validation Error"),
@@ -68,6 +80,9 @@ class PostRetrieveUpdateDestroyAPIView(APIView):
     },
     )   
     def put(self, request: Request, post_id: int) -> Response:
+        print(request.content_type)
+        print(request.FILES)
+        print(request.data)
         serializer = PostsInputModelSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
 
@@ -86,7 +101,9 @@ class PostRetrieveUpdateDestroyAPIView(APIView):
     @extend_schema(
     summary="Partial Update Post",
     description="Partially update a post. Admin only.",
-    request=PostsInputModelSerializer,
+    request={
+        "multipart/form-data": PostsInputModelSerializer,
+    },
     responses={
         200: PostOutputModelSerializer,
         400: OpenApiResponse(description="Validation Error"),

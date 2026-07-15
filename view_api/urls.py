@@ -20,10 +20,9 @@ from view_api.apps_api.posts.category.id.category_id_apis import CategoryRetriev
 
 app_name = "api"
 urlpatterns = [
-    path("jwt/", include(([
+    path("account/jwt/", include(([
         path("login/", TokenObtainPairView.as_view(), name="login"),
         path("refresh/", TokenRefreshView.as_view(), name="refresh"),
-        path("verify/", TokenVerifyView.as_view(), name="verify"),
 
     ])), name="jwt"),
     path(route="users/", view=UserListCreate.as_view(), name="user-list-create"),

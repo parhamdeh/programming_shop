@@ -15,6 +15,7 @@ from posts.services.category import create_category
 from posts.services.post import delete_category, full_update_category, partial_update_category
 from view_api.apps_api.posts.category.category_serializer import CategoryInputSerializer, CategoryOutputSerializer
 from view_api.permissions import IsAdminOrReadOnly
+from view_api.renderers import CustomResponseRenderer
 from view_api.throttle import AdminRequestThrottle
 
 import logging
@@ -24,6 +25,7 @@ logger = logging.getLogger(__name__)
 
 
 class CategoryRetrieveUpdateDstroyAPIView(APIView):
+    renderer_classes = (CustomResponseRenderer,)
     throttle_classes = (AdminRequestThrottle,)
     permission_classes = (IsAdminOrReadOnly, IsAuthenticated)
 

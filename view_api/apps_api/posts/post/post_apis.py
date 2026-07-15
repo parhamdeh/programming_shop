@@ -3,7 +3,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.permissions import IsAdminUser
-
+from rest_framework.parsers import MultiPartParser, FormParser
 from drf_spectacular.utils import (
     extend_schema,
     OpenApiResponse,
@@ -11,11 +11,12 @@ from drf_spectacular.utils import (
 
 from posts.selectors.list_posts import get_all_posts
 from posts.services.post import create_post
+
 from view_api.apps_api.posts.post.post_serializers import PostOutputModelSerializer, PostsInputModelSerializer
-from view_api.pagination import ProductsPagination, UsersPagination
-from view_api.permissions import IsAdminOrReadOnly, PremiumPostPermission
+from view_api.pagination import ProductsPagination
+from view_api.permissions import PremiumPostPermission
+from view_api.renderers import CustomResponseRenderer
 from view_api.throttle import AdminRequestThrottle
-from view_api.apps_api.users.user.users_serializer import UserInputSerializer, UserOutputModelSerializer
 
 from users.services.user_services import register
 from users.selectors.user_selector import get_users_list
@@ -26,6 +27,8 @@ logger = logging.getLogger(__name__)
 
 
 class PostListCreateAPIView(APIView):
+    renderer_classes = (CustomResponseRenderer,)
+    parser_classes = (MultiPartParser, FormParser)
     throttle_classes = (AdminRequestThrottle,)
     permission_classes = (PremiumPostPermission,)
     @extend_schema(
@@ -76,3 +79,4 @@ class PostListCreateAPIView(APIView):
             status=status.HTTP_201_CREATED
         )
     
+

@@ -14,6 +14,7 @@ from posts.selectors.subscription import get_subscription_by_id
 from posts.services.post import delete_sub, full_update_sub, partial_update_sub
 from view_api.apps_api.posts.subscription.subscription_serializers import SubscriptionInputSerializer, SubscriptionOutputModelSerializer
 from view_api.permissions import BuySubscriptionPermission, IsAdminOrReadOnly
+from view_api.renderers import CustomResponseRenderer
 from view_api.throttle import AdminRequestThrottle
 
 import logging
@@ -23,6 +24,7 @@ logger = logging.getLogger(__name__)
 
 
 class SubscriptionRetrieveUpdateDstroyAPIView(APIView):
+    renderer_classes = (CustomResponseRenderer,)
     throttle_classes = (AdminRequestThrottle,)
     permission_classes = (IsAdminOrReadOnly, IsAuthenticated)
 

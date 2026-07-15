@@ -24,6 +24,7 @@ from view_api.apps_api.posts.pay.pay_serializers import (
     SubscriptionVerifyOutputSerializer,
 )
 from view_api.permissions import BuySubscriptionPermission
+from view_api.renderers import CustomResponseRenderer
 
 logger = logging.getLogger(__name__)
 
@@ -34,7 +35,7 @@ ZP_API_STARTPAY = "https://sandbox.zarinpal.com/pg/StartPay/"
 CALLBACK_URL = "http://127.0.0.1:8000/api/subscriptions/verify/"
 
 class SubscriptionPaymentAPIView(APIView):
-
+    renderer_classes = (CustomResponseRenderer,)
     permission_classes = (BuySubscriptionPermission,)
 
     @extend_schema(
@@ -115,7 +116,7 @@ class SubscriptionPaymentAPIView(APIView):
         )
         
 class SubscriptionVerifyAPIView(APIView):
-
+    renderer_classes = (CustomResponseRenderer,)
     permission_classes = (IsAuthenticated,)
 
     @extend_schema(

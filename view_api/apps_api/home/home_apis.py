@@ -23,12 +23,14 @@ from users.selectors.user_selector import get_users_list
 
 import logging
 
+from view_api.renderers import CustomResponseRenderer
 from view_api.throttle import UserRequestThrottle
 
 logger = logging.getLogger(__name__)
 
 
 class HomeAPIview(APIView):
+    renderer_classes = (CustomResponseRenderer,)
     throttle_classes = (UserRequestThrottle,)
 
     @extend_schema(

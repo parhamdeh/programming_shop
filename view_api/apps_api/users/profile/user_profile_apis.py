@@ -22,6 +22,7 @@ from view_api.apps_api.users.authentication.authentication_serializers import Re
 from view_api.apps_api.users.profile.user_profile_serializer import ProfileOutputSerializer
 from view_api.pagination import UsersPagination
 from view_api.permissions import ProfilePermission
+from view_api.renderers import CustomResponseRenderer
 from view_api.throttle import AdminRequestThrottle, UserRequestThrottle
 from view_api.apps_api.users.user.users_serializer import UserInputSerializer, UserOutputModelSerializer
 
@@ -35,6 +36,7 @@ logger = logging.getLogger(__name__)
 
 
 class ProfileAPIView(APIView):
+    renderer_classes = (CustomResponseRenderer,)
     permission_classes = (ProfilePermission,)
     throttle_classes = (UserRequestThrottle,)
 

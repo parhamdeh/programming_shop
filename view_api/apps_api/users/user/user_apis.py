@@ -10,6 +10,7 @@ from drf_spectacular.utils import (
 )
 
 from view_api.pagination import UsersPagination
+from view_api.renderers import CustomResponseRenderer
 from view_api.throttle import AdminRequestThrottle
 from view_api.apps_api.users.user.users_serializer import UserInputSerializer, UserOutputModelSerializer
 
@@ -23,10 +24,20 @@ logger = logging.getLogger(__name__)
 
 
 class UserListCreate(APIView):
+    renderer_classes = (CustomResponseRenderer,)
     permission_classes = (IsAdminUser,)
     throttle_classes = (AdminRequestThrottle,)
     pagination_class = UsersPagination
 
+    @extend_schema(
+        tags=["account"],
+        summary="List Users",
+        description="Retrieve a paginated list of all users.",
+        responses={
+            200: UserOutputModelSerializer(many=True),
+            403: OpenApiResponse(description="Permission denied"),
+        },
+    )
     def get(self, request: Request) -> Response:
         users = get_users_list()
         pagination = UsersPagination()
@@ -36,6 +47,17 @@ class UserListCreate(APIView):
 
         return pagination.get_paginated_response(data=serializer.data)
 
+    @extend_schema(
+        tags=["account"],
+        summary="Create User",
+        description="Create a new user.",
+        request=UserInputSerializer,
+        responses={
+            201: UserOutputModelSerializer,
+            400: OpenApiResponse(description="Validation error"),
+            403: OpenApiResponse(description="Permission denied"),
+        },
+    )
     def post(self, request: Request) -> Response:
         serializer = UserInputSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)

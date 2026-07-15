@@ -55,8 +55,10 @@ class PremiumPostPermission(BasePermission):
         if request.user.is_staff:
             return True
         
+        if not request.user.is_authenticated:
+            return False
+        
         if request.method.lower() == "get":
-
             if not obj.is_premium:
                 return True
 
@@ -73,6 +75,9 @@ class BuySubscriptionPermission(BasePermission):
     def has_permission(self, request: Request, view: APIView,) -> bool:
         if request.user.is_staff:
             return True
+        
+        if not request.user.is_authenticated:
+            return False
         
         if request.method.lower() == "post":
             user_subscription = UserSubscription.objects.filter(
