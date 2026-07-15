@@ -15,7 +15,6 @@ from posts.selectors.post_detail import get_list_post_liks
 from posts.services.post import create_favorit_post, create_post, delete_favorit_post
 from view_api.apps_api.posts.likes.like_serilizers import PostLiksOutputModelSerializer
 from view_api.apps_api.posts.post.post_serializers import PostOutputModelSerializer, PostsInputModelSerializer
-from view_api.pagination import ProductsPagination
 from view_api.permissions import PremiumPostPermission
 from view_api.renderers import CustomResponseRenderer
 from view_api.throttle import AdminRequestThrottle
@@ -23,7 +22,7 @@ from view_api.apps_api.users.user.users_serializer import UserInputSerializer, U
 
 from users.services.user_services import register
 from users.selectors.user_selector import get_users_list
-
+from rest_framework.settings import api_settings
 import logging
 
 logger = logging.getLogger(__name__)
@@ -33,7 +32,8 @@ class PostLikeListCreateAPIView(APIView):
     renderer_classes = (CustomResponseRenderer,)
     throttle_classes = (AdminRequestThrottle,)
     permission_classes = (IsAuthenticated,)
-    
+    pagination_class = api_settings.DEFAULT_PAGINATION_CLASS
+
     @extend_schema(
     summary="List post likes",
     description="Return all users who liked the specified post.",
@@ -45,7 +45,7 @@ class PostLikeListCreateAPIView(APIView):
     )
     def get(self, request: Request, post_id: int) -> Response:
         likes = get_list_post_liks(post_id=post_id)
-        pagination = ProductsPagination()
+        pagination = self.pagination_class()
         page = pagination.paginate_queryset(likes, request)
 
         serializer = PostLiksOutputModelSerializer(page, many=True)

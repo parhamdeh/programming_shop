@@ -17,10 +17,9 @@ from users.services.otp_services import create_otp_code
 from users.tasks import delete_otp_task, send_otp_task
 from view_api.apps_api.users.authentication.authentication_serializers import RefreshTokenOutputSerializer, RegisterInputSerializer, VerifyOtpSerializer
 from view_api.exceptions import OTPExpiredError
-from view_api.pagination import UsersPagination
+
 from view_api.renderers import CustomResponseRenderer
-from view_api.throttle import AdminRequestThrottle, UserRequestThrottle
-from view_api.apps_api.users.user.users_serializer import UserInputSerializer, UserOutputModelSerializer
+from view_api.throttle import UserRequestThrottle
 
 from users.services.user_services import register
 from users.selectors.user_selector import get_users_list
@@ -31,7 +30,14 @@ logger = logging.getLogger(__name__)
 
 
 
-@extend_schema(
+
+class RegisterUserAPIView(APIView):
+    renderer_classes = (CustomResponseRenderer,)
+    permission_classes = (AllowAny,)
+    throttle_classes = (UserRequestThrottle,)
+
+    @extend_schema(
+    tags=["account"],
     summary="Register user",
     description="Send OTP to the user's phone number before creating the account.",
     request=RegisterInputSerializer,
@@ -44,11 +50,6 @@ logger = logging.getLogger(__name__)
         ),
     },
 )
-class RegisterUserAPIView(APIView):
-    renderer_classes = (CustomResponseRenderer,)
-    permission_classes = (AllowAny,)
-    throttle_classes = (UserRequestThrottle,)
-
     def post(self, request: Request) -> Response:
         serializer = RegisterInputSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
@@ -77,7 +78,14 @@ class RegisterUserAPIView(APIView):
             status=status.HTTP_200_OK,
         )
     
-@extend_schema(
+
+class VerifyOtpAPIView(APIView):
+    renderer_classes = (CustomResponseRenderer,)
+    permission_classes = (AllowAny,)
+    throttle_classes = (UserRequestThrottle,)
+
+    @extend_schema(
+    tags=["account"],
     summary="Verify OTP",
     description="Verify OTP code and create the user account.",
     request=VerifyOtpSerializer,
@@ -88,11 +96,6 @@ class RegisterUserAPIView(APIView):
         ),
     },
 )
-class VerifyOtpAPIView(APIView):
-    renderer_classes = (CustomResponseRenderer,)
-    permission_classes = (AllowAny,)
-    throttle_classes = (UserRequestThrottle,)
-
     def post(self, request: Request):
 
         serializer = VerifyOtpSerializer(data=request.data)

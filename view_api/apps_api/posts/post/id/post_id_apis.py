@@ -15,7 +15,6 @@ from posts.selectors.list_posts import get_all_posts
 from posts.selectors.post_detail import get_post_by_id
 from posts.services.post import create_post, delete_post, full_update, partial_update
 from view_api.apps_api.posts.post.post_serializers import PostOutputModelSerializer, PostsInputModelSerializer
-from view_api.pagination import ProductsPagination, UsersPagination
 from view_api.permissions import IsAdminOrReadOnly, PremiumPostPermission
 from view_api.renderers import CustomResponseRenderer
 from view_api.throttle import AdminRequestThrottle, UserRequestThrottle

@@ -7,6 +7,8 @@ from posts.models import Post
 class PostsInputModelSerializer(serializers.ModelSerializer):
     class Meta:
         model = Post
+        image = serializers.ImageField(required=False)
+        video = serializers.FileField(required=False)
         fields = [
             "title",
             "content",

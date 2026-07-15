@@ -16,7 +16,6 @@ from posts.services.post import create_comment, create_favorit_post, create_post
 from view_api.apps_api.posts.comments.comment_serializers import PostCommentInputSerializer, PostCommentsOutputModelSerializer
 from view_api.apps_api.posts.likes.like_serilizers import PostLiksOutputModelSerializer
 from view_api.apps_api.posts.post.post_serializers import PostOutputModelSerializer, PostsInputModelSerializer
-from view_api.pagination import ProductsPagination
 from view_api.permissions import PremiumPostPermission
 from view_api.renderers import CustomResponseRenderer
 from view_api.throttle import UserRequestThrottle
@@ -26,6 +25,7 @@ from users.services.user_services import register
 from users.selectors.user_selector import get_users_list
 
 import logging
+from rest_framework.settings import api_settings
 
 logger = logging.getLogger(__name__)
 
@@ -34,6 +34,8 @@ class PostCommentListCreateAPIView(APIView):
     renderer_classes = (CustomResponseRenderer,)
     permission_classes = (IsAuthenticated,)
     throttle_classes = (UserRequestThrottle,)
+    pagination_class = api_settings.DEFAULT_PAGINATION_CLASS
+
 
     @extend_schema(
         summary="List post comments",
@@ -53,7 +55,7 @@ class PostCommentListCreateAPIView(APIView):
             request.user.username,
         )
 
-        pagination = ProductsPagination()
+        pagination = self.pagination_class()
         page = pagination.paginate_queryset(comments, request)
 
         serializer = PostCommentsOutputModelSerializer(

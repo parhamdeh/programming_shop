@@ -13,13 +13,11 @@ from posts.selectors.list_posts import get_all_posts
 from posts.services.post import create_post
 
 from view_api.apps_api.posts.post.post_serializers import PostOutputModelSerializer, PostsInputModelSerializer
-from view_api.pagination import ProductsPagination
 from view_api.permissions import PremiumPostPermission
 from view_api.renderers import CustomResponseRenderer
 from view_api.throttle import AdminRequestThrottle
 
-from users.services.user_services import register
-from users.selectors.user_selector import get_users_list
+from rest_framework.settings import api_settings
 
 import logging
 
@@ -31,6 +29,8 @@ class PostListCreateAPIView(APIView):
     parser_classes = (MultiPartParser, FormParser)
     throttle_classes = (AdminRequestThrottle,)
     permission_classes = (PremiumPostPermission,)
+    pagination_class = api_settings.DEFAULT_PAGINATION_CLASS
+    
     @extend_schema(
         summary="List Posts",
         description="Returns a paginated list of all posts.",
@@ -40,7 +40,7 @@ class PostListCreateAPIView(APIView):
     )
     def get(self, request: Request) -> Response:
         posts = get_all_posts()
-        pagination = ProductsPagination()
+        pagination = self.pagination_class()
         page = pagination.paginate_queryset(posts, request)
 
         serializer = PostOutputModelSerializer(page, many=True)
@@ -50,7 +50,9 @@ class PostListCreateAPIView(APIView):
     @extend_schema(
         summary="Create Post",
         description="Creates a new post. Admin users only.",
-        request=PostsInputModelSerializer,
+        request={
+            "multipart/form-data": PostsInputModelSerializer,
+        },
         responses={
             201: PostOutputModelSerializer,
             400: OpenApiResponse(description="Validation Error"),

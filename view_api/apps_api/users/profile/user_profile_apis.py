@@ -20,7 +20,6 @@ from users.services.otp_services import create_otp_code
 from users.tasks import delete_otp_task, send_otp_task
 from view_api.apps_api.users.authentication.authentication_serializers import RefreshTokenOutputSerializer, RegisterInputSerializer, VerifyOtpSerializer
 from view_api.apps_api.users.profile.user_profile_serializer import ProfileOutputSerializer
-from view_api.pagination import UsersPagination
 from view_api.permissions import ProfilePermission
 from view_api.renderers import CustomResponseRenderer
 from view_api.throttle import AdminRequestThrottle, UserRequestThrottle

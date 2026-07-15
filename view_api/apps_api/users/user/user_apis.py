@@ -9,7 +9,6 @@ from drf_spectacular.utils import (
     OpenApiResponse,
 )
 
-from view_api.pagination import UsersPagination
 from view_api.renderers import CustomResponseRenderer
 from view_api.throttle import AdminRequestThrottle
 from view_api.apps_api.users.user.users_serializer import UserInputSerializer, UserOutputModelSerializer
@@ -20,14 +19,14 @@ from users.selectors.user_selector import get_users_list
 import logging
 
 logger = logging.getLogger(__name__)
-
+from rest_framework.settings import api_settings
 
 
 class UserListCreate(APIView):
     renderer_classes = (CustomResponseRenderer,)
     permission_classes = (IsAdminUser,)
     throttle_classes = (AdminRequestThrottle,)
-    pagination_class = UsersPagination
+    pagination_class = api_settings.DEFAULT_PAGINATION_CLASS
 
     @extend_schema(
         tags=["account"],
@@ -40,7 +39,7 @@ class UserListCreate(APIView):
     )
     def get(self, request: Request) -> Response:
         users = get_users_list()
-        pagination = UsersPagination()
+        pagination = self.pagination_class()
         page = pagination.paginate_queryset(users, request)
 
         serializer = UserOutputModelSerializer(page, many=True)
