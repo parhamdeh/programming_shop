@@ -5,9 +5,10 @@ import logging
 
 logger = logging.getLogger(__name__)
 
+from django.utils.deprecation import MiddlewareMixin
 
 
-class RequestLoggingMiddleware:
+class RequestLoggingMiddleware(MiddlewareMixin):
     def __init__(self, get_response):
         self.get_response = get_response
 
