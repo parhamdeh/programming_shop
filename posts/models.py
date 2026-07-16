@@ -19,7 +19,7 @@ class Subscription(BaseModel):
     limit_days = models.PositiveIntegerField(verbose_name=_("تعداد روز ها"))
 
     class Meta:
-        ordering = ('-created',)
+        ordering = ('-created_at',)
         verbose_name=_("اشتراک")
         verbose_name_plural = _("اشتراک")
 
@@ -50,7 +50,7 @@ class UserSubscription(BaseModel):
     is_active = models.BooleanField(default=True, verbose_name=_("فعال است"))
 
     class Meta:
-        ordering = ('-created',)
+        ordering = ('-created_at',)
         verbose_name=_("اشتراک کاربر")
         verbose_name_plural = _("اشتراک کاربر")
 
@@ -76,7 +76,7 @@ class Category(MPTTModel, BaseModel):
         order_insertion_by = ['name']
 
     class Meta:
-        ordering = ('-created',)
+        ordering = ('-created_at',)
         verbose_name = _( 'دسته بندی')
         verbose_name_plural = _('دسته بندی')
 
@@ -100,7 +100,7 @@ class Post(BaseModel):
     is_premium = models.BooleanField(default=False, verbose_name=_("ویژه است"))
 
     class Meta:
-        ordering = ('-created',)
+        ordering = ('-created_at',)
         verbose_name=_("پست ")
         verbose_name_plural = _("پست ")
     
@@ -114,7 +114,7 @@ class Comments(BaseModel):
     content = models.CharField(verbose_name=_("محتوا"))
 
     class Meta:
-        ordering = ('-created',)
+        ordering = ('-created_at',)
         verbose_name=_("کامنت ها")
         verbose_name_plural = _("کامنت ها")
 
@@ -125,7 +125,7 @@ class FavoritPost(BaseModel):
     post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name="favorits", verbose_name=_("پست"))
 
     class Meta:
-        ordering = ('-created',)
+        ordering = ('-created_at',)
         unique_together = ("user", "post")
         verbose_name=_(" لایک ها")
         verbose_name_plural =_(" لایک ها")

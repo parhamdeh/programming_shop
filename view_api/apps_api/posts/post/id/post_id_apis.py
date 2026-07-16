@@ -1,7 +1,7 @@
 # Third Party Packages
 import logging
 from rest_framework.request import Request
-from rest_framework.views import APIView
+from rest_framework.generics import RetrieveUpdateDestroyAPIView
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.exceptions import NotFound
@@ -24,7 +24,7 @@ from view_api.throttle import UserRequestThrottle
 logger = logging.getLogger(__name__)
 
 
-class PostRetrieveUpdateDestroyAPIView(APIView):
+class PostRetrieveUpdateDestroyAPIView(RetrieveUpdateDestroyAPIView):
     renderer_classes = (CustomResponseRenderer,)
     parser_classes = (MultiPartParser, FormParser)
     permission_classes = (PremiumPostPermission,)

@@ -1,9 +1,8 @@
 # Third Party Packages
 import logging
 from rest_framework.request import Request
-from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework import status
+from rest_framework import status, generics
 from rest_framework.permissions import IsAuthenticated
 from drf_spectacular.utils import (
     extend_schema,
@@ -22,10 +21,30 @@ from view_api.throttle import AdminRequestThrottle
 logger = logging.getLogger(__name__)
 
 
-class SubscriptionListCreateAPIView(APIView):
+class SubscriptionListCreateAPIView(generics.ListCreateAPIView):
     renderer_classes = (CustomResponseRenderer,)
     throttle_classes = (AdminRequestThrottle,)
     permission_classes = (IsAdminOrReadOnly, IsAuthenticated)
+
+    def get_queryset(self):
+        try:
+            return get_all_subscriptions()
+        except Exception as e:
+            logger.exception(f"database error{e}")
+            raise
+
+    def get_serializer_class(self):
+        if self.request.method == "POST":
+            return SubscriptionInputSerializer
+        return SubscriptionOutputModelSerializer
+
+    def perform_create(self, serializer) -> None:
+        try:
+            subscription = create_subscription(data=serializer.validated_data)
+        except Exception as e:
+            logger.exception(f"database error {e}")
+            raise
+        serializer.instance = subscription
 
     @extend_schema(
     summary="List Subscriptions",
@@ -34,16 +53,8 @@ class SubscriptionListCreateAPIView(APIView):
         200: SubscriptionOutputModelSerializer(many=True),
     },
     )
-    def get(self, request: Request) -> Response:
-        try:
-            subscription = get_all_subscriptions()
-        except Exception as e:
-            logger.exception(f"database error{e}")
-            raise
-        return Response(
-            data=SubscriptionOutputModelSerializer(instance=subscription, many=True).data,
-            status=status.HTTP_200_OK,
-        )
+    def get(self, request: Request, *args, **kwargs) -> Response:
+        return self.list(request, *args, **kwargs)
 
     @extend_schema(
     summary="Create Subscription",
@@ -55,16 +66,7 @@ class SubscriptionListCreateAPIView(APIView):
         403: OpenApiResponse(description="Permission denied"),
     },
     )
-    def post(self, request: Request) -> Response:
-        serializer = SubscriptionInputSerializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        try:
-            subscription = create_subscription(data=serializer.validated_data)
-        except Exception as e:
-            logger.exception(f"database error {e}")
-            raise
-
-        return Response(
-            data=SubscriptionOutputModelSerializer(instance=subscription).data,
-            status=status.HTTP_201_CREATED,
-        )
+    def post(self, request: Request, *args, **kwargs) -> Response:
+        response = self.create(request, *args, **kwargs)
+        response.status_code = status.HTTP_201_CREATED
+        return response

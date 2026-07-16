@@ -1,17 +1,19 @@
 # Third Party Packages
 import logging
+from typing import Any
 from rest_framework.request import Request
-from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework import status
+from rest_framework import generics, status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.exceptions import NotFound
+from rest_framework.serializers import BaseSerializer
 from drf_spectacular.utils import (
     extend_schema,
     OpenApiResponse,
 )
 
 # Local Apps
+from posts.models import Subscription
 from posts.selectors.subscription import get_subscription_by_id
 from posts.services.post import delete_sub, full_update_sub, partial_update_sub
 from view_api.apps_api.posts.subscription.subscription_serializers import SubscriptionInputSerializer, SubscriptionOutputModelSerializer
@@ -25,10 +27,63 @@ logger = logging.getLogger(__name__)
 
 
 
-class SubscriptionRetrieveUpdateDstroyAPIView(APIView):
+class SubscriptionRetrieveUpdateDstroyAPIView(generics.RetrieveUpdateDestroyAPIView):
     renderer_classes = (CustomResponseRenderer,)
     throttle_classes = (AdminRequestThrottle,)
     permission_classes = (IsAdminOrReadOnly, IsAuthenticated)
+
+    lookup_url_kwarg = "subscription_id"
+
+    def get_object(self) -> Subscription:
+        subscription = get_subscription_by_id(
+            sub_id=self.kwargs["subscription_id"]
+        ).first()
+
+        if not subscription:
+            raise NotFound("subscription not found")
+
+        return subscription
+
+    def get_serializer_class(self) -> type[BaseSerializer]:
+        if self.request.method == "GET":
+            return SubscriptionOutputModelSerializer
+        return SubscriptionInputSerializer
+
+    def update(self, requesta: Request, *args: Any, **kwargs: Any) -> Response:
+        partial = kwargs.pop("partial", False)
+        instance = self.get_object()
+        serializer = self.get_serializer(instance, data=requesta.data, partial=partial)
+        serializer.is_valid(raise_exception=True)
+
+        try:
+            self.perform_update(serializer)
+        except Exception as e:
+            logger.exception(f"database error {e}")
+            raise
+
+        return Response(
+            data=SubscriptionOutputModelSerializer(instance=serializer.instance).data,
+            status=status.HTTP_200_OK,
+        )
+
+    def perform_update(self, serializer: BaseSerializer) -> None:
+        subscription_id = self.kwargs["subscription_id"]
+
+        if serializer.partial:
+            subscription = partial_update_sub(
+                subscription_id=subscription_id,
+                data=serializer.validated_data,
+            )
+        else:
+            subscription = full_update_sub(
+                subscription_id=subscription_id,
+                data=serializer.validated_data,
+            )
+
+        serializer.instance = subscription
+
+    def perform_destroy(self, instance: Subscription) -> None:
+        delete_sub(subscription_id=self.kwargs["subscription_id"])
 
     @extend_schema(
     summary="Retrieve Subscription",
@@ -38,16 +93,9 @@ class SubscriptionRetrieveUpdateDstroyAPIView(APIView):
         404: OpenApiResponse(description="Subscription not found"),
     },
 )
-    def get(self, requesta: Request, subscription_id: int) -> Response:
-        subscription = get_subscription_by_id(sub_id=subscription_id).first()
-        if not subscription:
-            raise NotFound("subscription not found")
-        
-        return Response(
-            data=SubscriptionOutputModelSerializer(instance=subscription).data,
-            status=status.HTTP_200_OK,
-        )
-    
+    def get(self, requesta: Request, *args: Any, **kwargs: Any) -> Response:
+        return self.retrieve(requesta, *args, **kwargs)
+
     @extend_schema(
     summary="Update Subscription",
     description="Fully update a subscription. Admin only.",
@@ -59,20 +107,9 @@ class SubscriptionRetrieveUpdateDstroyAPIView(APIView):
         404: OpenApiResponse(description="Subscription not found"),
     },
     )
-    def put(self, requesta: Request, subscription_id: int) -> Response:
-        serializer = SubscriptionInputSerializer(data=requesta.data)
-        serializer.is_valid(raise_exception=True)
-        try:
-            subscription = full_update_sub(subscription_id=subscription_id, data=serializer.validated_data)
-        except Exception as e:
-            logger.exception(f"database error {e}")
-            raise
+    def put(self, requesta: Request, *args: Any, **kwargs: Any) -> Response:
+        return self.update(requesta, *args, **kwargs)
 
-        return Response(
-            data=SubscriptionOutputModelSerializer(instance=subscription).data,
-            status=status.HTTP_200_OK,
-        )
-    
     @extend_schema(
     summary="Partial Update Subscription",
     description="Partially update a subscription. Admin only.",
@@ -84,18 +121,8 @@ class SubscriptionRetrieveUpdateDstroyAPIView(APIView):
         404: OpenApiResponse(description="Subscription not found"),
     },
     )
-    def patch(self, requesta: Request, subscription_id: int) -> Response:
-        serializer = SubscriptionInputSerializer(data=requesta.data, partial=True)
-        serializer.is_valid(raise_exception=True)
-        try:
-            subscription = partial_update_sub(subscription_id=subscription_id, data=serializer.validated_data)
-        except Exception as e:
-            logger.exception(f"database error {e}")
-
-        return Response(
-            data=SubscriptionOutputModelSerializer(instance=subscription).data,
-            status=status.HTTP_200_OK,
-        )
+    def patch(self, requesta: Request, *args: Any, **kwargs: Any) -> Response:
+        return self.partial_update(requesta, *args, **kwargs)
 
     @extend_schema(
     summary="Delete Subscription",
@@ -106,6 +133,5 @@ class SubscriptionRetrieveUpdateDstroyAPIView(APIView):
         404: OpenApiResponse(description="Subscription not found"),
     },
     )
-    def delete(self, requesta: Request, subscription_id: int) -> Response:
-        delete_sub(subscription_id=subscription_id)
-        return Response(status=status.HTTP_204_NO_CONTENT)
+    def delete(self, requesta: Request, *args: Any, **kwargs: Any) -> Response:
+        return self.destroy(requesta, *args, **kwargs)

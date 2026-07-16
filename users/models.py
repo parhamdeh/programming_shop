@@ -81,7 +81,7 @@ class BaseUserModel(BaseModel, AbstractBaseUser, PermissionsMixin):
     _password = None
     objects = BaseUserManager()
     class Meta:
-        ordering = ('-created',)
+        ordering = ('-created_at',)
         verbose_name = _("کاربر")
         verbose_name_plural = _("کاربر")
 
@@ -142,7 +142,7 @@ class UserProfileModel(BaseModel):
     subscription = models.ForeignKey(Subscription, on_delete=models.CASCADE, related_name="subscription", null=True, blank=True, verbose_name=_("اشتراک کاربر"))
 
     class Meta:
-        ordering = ('-created',)
+        ordering = ('-created_at',)
         verbose_name = _("پروفایل کاربر")
         verbose_name_plural = _("پروفایل کاربر")
 
@@ -153,7 +153,7 @@ class OtpCode(BaseModel):
     created_at = models.DateTimeField(auto_now_add=True, verbose_name=_("ساخته شده در تاریخ"))
 
     class Meta:
-        ordering = ('-created',)
+        ordering = ('-created_at',)
         verbose_name = _("کد تایید ")
         verbose_name_plural = _("کد تایید ")
 
