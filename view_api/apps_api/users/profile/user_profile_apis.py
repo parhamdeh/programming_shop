@@ -1,4 +1,3 @@
-
 # Third Party Packages
 from rest_framework.request import Request
 from rest_framework.views import APIView
@@ -9,6 +8,7 @@ from drf_spectacular.utils import (
     OpenApiResponse,
 )
 import logging
+from rest_framework import generics, mixins
 
 # Local Apps
 from users.selectors.profile_selector import get_user_favorite_posts, get_user_subscription_detail
@@ -28,10 +28,21 @@ logger = logging.getLogger(__name__)
 
 
 
-class ProfileAPIView(APIView):
+class ProfileAPIView(mixins.RetrieveModelMixin, generics.GenericAPIView):
     renderer_classes = (CustomResponseRenderer,)
     permission_classes = (ProfilePermission,)
     throttle_classes = (UserRequestThrottle,)
+    serializer_class = ProfileOutputSerializer
+
+    def get_object(self):
+        subscription = get_user_subscription_detail(request=self.request)
+        favorits = get_user_favorite_posts(request=self.request)
+
+        return {
+            "user": self.request.user,
+            "subscription": subscription,
+            "favorits": favorits,
+        }
 
     @extend_schema(
     summary="User profile",
@@ -43,21 +54,4 @@ class ProfileAPIView(APIView):
     },
     )
     def get(self, request: Request, user_id: int) -> Response:
-        subscription = get_user_subscription_detail(request=request)
-        favorits = get_user_favorite_posts(request=request)
-
-        
-        data = {
-                "user": request.user,
-                "subscription": subscription,
-                "favorits": favorits,
-            }
-
-        serializer = ProfileOutputSerializer(instance=data)
-
-        return Response(
-            serializer.data,
-            status=status.HTTP_200_OK,
-            )
-    
-    
+        return self.retrieve(request, user_id=user_id)

@@ -6,6 +6,7 @@ from rest_framework import status
 from rest_framework.permissions import IsAdminUser
 from rest_framework.settings import api_settings
 import logging
+from rest_framework import generics, mixins
 from drf_spectacular.utils import (
     extend_schema,
     OpenApiResponse,
@@ -22,11 +23,15 @@ from users.selectors.user_selector import get_users_list
 logger = logging.getLogger(__name__)
 
 
-class UserListCreate(APIView):
+class UserListCreate(mixins.ListModelMixin, mixins.CreateModelMixin, generics.GenericAPIView):
     renderer_classes = (CustomResponseRenderer,)
     permission_classes = (IsAdminUser,)
     throttle_classes = (AdminRequestThrottle,)
     pagination_class = api_settings.DEFAULT_PAGINATION_CLASS
+    serializer_class = UserOutputModelSerializer
+
+    def get_queryset(self):
+        return get_users_list()
 
     @extend_schema(
         tags=["account"],
@@ -38,13 +43,7 @@ class UserListCreate(APIView):
         },
     )
     def get(self, request: Request) -> Response:
-        users = get_users_list()
-        pagination = self.pagination_class()
-        page = pagination.paginate_queryset(users, request)
-
-        serializer = UserOutputModelSerializer(page, many=True)
-
-        return pagination.get_paginated_response(data=serializer.data)
+        return self.list(request)
 
     @extend_schema(
         tags=["account"],
@@ -58,14 +57,14 @@ class UserListCreate(APIView):
         },
     )
     def post(self, request: Request) -> Response:
-        serializer = UserInputSerializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
+        input_serializer = UserInputSerializer(data=request.data)
+        input_serializer.is_valid(raise_exception=True)
         try:
 
             user = register(
-                username=serializer.validated_data.get("username"),
-                phone=serializer.validated_data.get("phone"),
-                password=serializer.validated_data.get("password"),
+                username=input_serializer.validated_data.get("username"),
+                phone=input_serializer.validated_data.get("phone"),
+                password=input_serializer.validated_data.get("password"),
                 subscription=None,
                 )
         except Exception as e:
@@ -73,9 +72,6 @@ class UserListCreate(APIView):
             raise
 
         return Response(
-            data=UserOutputModelSerializer(instance=user).data,
+            data=self.get_serializer(instance=user).data,
             status=status.HTTP_201_CREATED,
         )
-
-
-

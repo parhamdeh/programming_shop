@@ -3,6 +3,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.exceptions import NotFound
+from rest_framework import generics, mixins
 
 from view_api.permissions import UserChangeIfAdminOrSelfUser
 from view_api.renderers import CustomResponseRenderer
@@ -22,13 +23,23 @@ import logging
 logger = logging.getLogger(__name__)
 
 
-class UserRetrieveUpdatadeDestroy(APIView):
+class UserRetrieveUpdatadeDestroy(mixins.RetrieveModelMixin, mixins.DestroyModelMixin, generics.GenericAPIView):
     """
     Retrieve, update or delete a user.
     """
     renderer_classes = (CustomResponseRenderer,)
     permission_classes = (UserChangeIfAdminOrSelfUser,)
     throttle_classes = (AdminRequestThrottle,)
+    serializer_class = UserOutputModelSerializer
+
+    def get_object(self):
+        user = get_user_by_id(user_id=self.kwargs["user_id"]).first()
+
+        if not user:
+            logger.info("user not found")
+            raise NotFound("user not found!")
+
+        return user
 
     @extend_schema(
         summary="Retrieve User",
@@ -45,16 +56,7 @@ Only administrators are allowed to access this endpoint.
         },
     )
     def get(self, request: Request, user_id: int) -> Response:
-        user = get_user_by_id(user_id=user_id).first()
-
-        if not user:
-            logger.info("user not found")
-            raise NotFound("user not found!")
-
-        return Response(
-            UserOutputModelSerializer(user).data,
-            status=status.HTTP_200_OK,
-        )
+        return self.retrieve(request, user_id=user_id)
 
     @extend_schema(
         summary="Full Update User",
@@ -89,7 +91,7 @@ All required fields must be provided.
         logger.info("user updated! -> full update")
 
         return Response(
-            UserOutputModelSerializer(user).data,
+            self.get_serializer(user).data,
             status=status.HTTP_200_OK,
         )
 
@@ -130,9 +132,18 @@ Only the supplied fields will be modified.
         logger.info("user updated! -> partial update")
 
         return Response(
-            UserOutputModelSerializer(user).data,
+            self.get_serializer(user).data,
             status=status.HTTP_200_OK,
         )
+
+    def perform_destroy(self, instance) -> None:
+        try:
+            delete_user(user_id=instance.id)
+        except Exception:
+            logger.exception("database error")
+            raise
+
+        logger.info("user deleted!")
 
     @extend_schema(
         summary="Delete User",
@@ -149,15 +160,4 @@ This operation cannot be undone.
         },
     )
     def delete(self, request: Request, user_id: int) -> Response:
-
-        try:
-            delete_user(user_id=user_id)
-        except Exception:
-            logger.exception("database error")
-            raise
-
-        logger.info("user deleted!")
-
-        return Response(
-            status=status.HTTP_204_NO_CONTENT,
-        )
+        return self.destroy(request, user_id=user_id)
