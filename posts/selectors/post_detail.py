@@ -57,7 +57,7 @@ def check_post_is_premium(*, post_id: int, user_id: int) -> bool:
 def get_list_post_liks(*, post_id: int) -> QuerySet[FavoritPost]:
     post = get_post_by_id(post_id=post_id).first()
     if not post:
-        return NotFound("post not found")
+        raise NotFound("post not found")
     return FavoritPost.objects.filter(
         post=post
     ).all()
@@ -65,7 +65,7 @@ def get_list_post_liks(*, post_id: int) -> QuerySet[FavoritPost]:
 def get_post_comments_list(*, post_id: int) -> QuerySet[Comments]:
     post = get_post_by_id(post_id=post_id).first()
     if not post:
-        return NotFound("post not found")
+        raise NotFound("post not found")
     return Comments.objects.filter(
         post=post
     ).all()

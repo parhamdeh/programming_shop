@@ -1,10 +1,10 @@
 # Third Party Packages
 from rest_framework.request import Request
-from rest_framework.views import APIView
+from rest_framework.generics import GenericAPIView
 from rest_framework.response import Response
 import logging
 from rest_framework.settings import api_settings
-from rest_framework import status
+from rest_framework import status, mixins
 from rest_framework.permissions import IsAuthenticated
 from drf_spectacular.utils import (
     extend_schema,
@@ -23,12 +23,15 @@ from view_api.throttle import UserRequestThrottle
 logger = logging.getLogger(__name__)
 
 
-class PostCommentListCreateAPIView(APIView):
+class PostCommentListCreateAPIView(mixins.ListModelMixin, mixins.CreateModelMixin, GenericAPIView):
     renderer_classes = (CustomResponseRenderer,)
     permission_classes = (IsAuthenticated,)
     throttle_classes = (UserRequestThrottle,)
     pagination_class = api_settings.DEFAULT_PAGINATION_CLASS
+    serializer_class = PostCommentsOutputModelSerializer
 
+    def get_queryset(self):
+        return get_post_comments_list(post_id=self.kwargs["post_id"])
 
     @extend_schema(
         summary="List post comments",
@@ -40,23 +43,13 @@ class PostCommentListCreateAPIView(APIView):
         },
     )
     def get(self, request: Request, post_id: int) -> Response:
-        comments = get_post_comments_list(post_id=post_id)
-
         logger.info(
             "Comments retrieved for post %s by user %s",
             post_id,
             request.user.username,
         )
 
-        pagination = self.pagination_class()
-        page = pagination.paginate_queryset(comments, request)
-
-        serializer = PostCommentsOutputModelSerializer(
-            page,
-            many=True,
-        )
-
-        return pagination.get_paginated_response(serializer.data)
+        return self.list(request, post_id=post_id)
 
     @extend_schema(
         summary="Create comment",
@@ -70,14 +63,14 @@ class PostCommentListCreateAPIView(APIView):
         },
     )
     def post(self, request: Request, post_id: int) -> Response:
-        serializer = PostCommentInputSerializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
+        input_serializer = PostCommentInputSerializer(data=request.data)
+        input_serializer.is_valid(raise_exception=True)
 
         try:
             comment = create_comment(
                 user=request.user,
                 post_id=post_id,
-                content=serializer.validated_data["content"],
+                content=input_serializer.validated_data["content"],
             )
         except Exception as ex:
             logger.exception("Database error: %s", ex)
@@ -89,8 +82,10 @@ class PostCommentListCreateAPIView(APIView):
             post_id,
         )
 
+        output_serializer = self.get_serializer(comment)
+
         return Response(
-            PostCommentsOutputModelSerializer(comment).data,
+            output_serializer.data,
             status=status.HTTP_201_CREATED,
         )
 

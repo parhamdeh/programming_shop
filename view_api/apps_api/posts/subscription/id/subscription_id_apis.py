@@ -49,10 +49,10 @@ class SubscriptionRetrieveUpdateDstroyAPIView(generics.RetrieveUpdateDestroyAPIV
             return SubscriptionOutputModelSerializer
         return SubscriptionInputSerializer
 
-    def update(self, requesta: Request, *args: Any, **kwargs: Any) -> Response:
+    def update(self, request: Request, *args: Any, **kwargs: Any) -> Response:
         partial = kwargs.pop("partial", False)
         instance = self.get_object()
-        serializer = self.get_serializer(instance, data=requesta.data, partial=partial)
+        serializer = self.get_serializer(instance, data=request.data, partial=partial)
         serializer.is_valid(raise_exception=True)
 
         try:
@@ -93,8 +93,8 @@ class SubscriptionRetrieveUpdateDstroyAPIView(generics.RetrieveUpdateDestroyAPIV
         404: OpenApiResponse(description="Subscription not found"),
     },
 )
-    def get(self, requesta: Request, *args: Any, **kwargs: Any) -> Response:
-        return self.retrieve(requesta, *args, **kwargs)
+    def get(self, request: Request, *args: Any, **kwargs: Any) -> Response:
+        return self.retrieve(request, *args, **kwargs)
 
     @extend_schema(
     summary="Update Subscription",

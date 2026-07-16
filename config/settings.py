@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     "rest_framework",
     "drf_spectacular",
     "drf_error_handler",
+    "unfold",
     "mptt",
     'users',
     'posts',
@@ -241,5 +242,120 @@ DRF_ERROR_HANDLER = {
 }
 
 ELASTICSEARCH_DSL = ...
+from django.templatetags.static import static
+from django.urls import reverse_lazy
+from django.utils.translation import gettext_lazy as _
+
+UNFOLD = {
+    # -----------------------------
+    # Site
+    # -----------------------------
+    "SITE_TITLE": "پنل مدیریت",
+    "SITE_HEADER": "پنل مدیریت",
+    "SITE_SUBHEADER": "Django Administration",
+    "SITE_URL": "/",
+    "SITE_SYMBOL": "dashboard",
+
+    # -----------------------------
+    # Logos
+    # -----------------------------
+    "SITE_LOGO": lambda request: static("images/logo.png"),
+    "SITE_ICON": lambda request: static("images/favicon.ico"),
+    "SITE_LOGO_DARK": lambda request: static("images/logo-dark.png"),
+
+    # -----------------------------
+    # Appearance
+    # -----------------------------
+    "SHOW_HISTORY": True,
+    "SHOW_VIEW_ON_SITE": True,
+    "SHOW_BACK_BUTTON": True,
+
+    # -----------------------------
+    # Theme
+    # -----------------------------
+    "THEME": "light",
+
+    # -----------------------------
+    # Colors
+    # -----------------------------
+    "COLORS": {
+        "primary": {
+            "50": "239 246 255",
+            "100": "219 234 254",
+            "200": "191 219 254",
+            "300": "147 197 253",
+            "400": "96 165 250",
+            "500": "59 130 246",
+            "600": "37 99 235",
+            "700": "29 78 216",
+            "800": "30 64 175",
+            "900": "30 58 138",
+        },
+    },
+
+    # -----------------------------
+    # Login
+    # -----------------------------
+    "LOGIN": {
+        "image": lambda request: static("images/login.jpg"),
+    },
+
+    # -----------------------------
+    # Sidebar
+    # -----------------------------
+    "SIDEBAR": {
+        "show_search": True,
+        "show_all_applications": True,
+        "navigation": [
+            {
+                "title": _("Dashboard"),
+                "separator": True,
+                "items": [
+                    {
+                        "title": _("Home"),
+                        "icon": "home",
+                        "link": reverse_lazy("admin:index"),
+                    },
+                ],
+            },
+        ],
+    },
+
+    # -----------------------------
+    # Tabs
+    # -----------------------------
+    "TABS": [],
+
+    # -----------------------------
+    # Styles
+    # -----------------------------
+    "STYLES": [
+        lambda request: static("css/admin.css"),
+    ],
+
+    # -----------------------------
+    # Scripts
+    # -----------------------------
+    "SCRIPTS": [
+        lambda request: static("js/admin.js"),
+    ],
+
+    # -----------------------------
+    # Breadcrumbs
+    # -----------------------------
+    "BREADCRUMBS": True,
+
+    # -----------------------------
+    # Environment
+    # -----------------------------
+    "ENVIRONMENT": "Development",
+
+    # -----------------------------
+    # Footer
+    # -----------------------------
+    "FOOTER": {
+        "copyright": "© 2026 Your Company",
+    },
+}
 from config.logging import LOGGING
 

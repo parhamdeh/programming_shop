@@ -6,6 +6,7 @@ from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.settings import api_settings
 import logging
+from rest_framework import generics, mixins
 from drf_spectacular.utils import (
     extend_schema,
     OpenApiResponse,
@@ -23,11 +24,15 @@ from view_api.throttle import AdminRequestThrottle
 logger = logging.getLogger(__name__)
 
 
-class PostLikeListCreateAPIView(APIView):
+class PostLikeListCreateAPIView(mixins.ListModelMixin, mixins.CreateModelMixin, generics.GenericAPIView):
     renderer_classes = (CustomResponseRenderer,)
     throttle_classes = (AdminRequestThrottle,)
     permission_classes = (IsAuthenticated,)
     pagination_class = api_settings.DEFAULT_PAGINATION_CLASS
+    serializer_class = PostLiksOutputModelSerializer
+
+    def get_queryset(self):
+        return get_list_post_liks(post_id=self.kwargs["post_id"])
 
     @extend_schema(
     summary="List post likes",
@@ -39,13 +44,7 @@ class PostLikeListCreateAPIView(APIView):
     },
     )
     def get(self, request: Request, post_id: int) -> Response:
-        likes = get_list_post_liks(post_id=post_id)
-        pagination = self.pagination_class()
-        page = pagination.paginate_queryset(likes, request)
-
-        serializer = PostLiksOutputModelSerializer(page, many=True)
-
-        return pagination.get_paginated_response(data=serializer.data)
+        return self.list(request, post_id=post_id)
 
     @extend_schema(
     summary="Like a post",
@@ -64,7 +63,7 @@ class PostLikeListCreateAPIView(APIView):
             raise
 
         return Response(
-            data=PostLiksOutputModelSerializer(instance=post).data,
+            data=self.get_serializer(instance=post).data,
             status=status.HTTP_201_CREATED
         )
     
@@ -81,4 +80,3 @@ class PostLikeListCreateAPIView(APIView):
         delete_favorit_post(user=request.user, post_id=post_id)
 
         return Response(status=status.HTTP_204_NO_CONTENT)
-    
