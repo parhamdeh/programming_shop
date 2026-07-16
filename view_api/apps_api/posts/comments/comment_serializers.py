@@ -1,4 +1,7 @@
+# Third Party Packages# Local Apps
 from rest_framework import serializers
+
+# Local Apps
 from posts.models import Comments
 
 

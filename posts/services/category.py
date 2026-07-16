@@ -1,3 +1,4 @@
+# Local Apps
 from posts.models import Category
 
 

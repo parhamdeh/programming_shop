@@ -1,4 +1,7 @@
+# Third Party Packages
 from celery import shared_task
+
+# Local Apps
 from users.services.sms_service import send_otp
 from users.models import OtpCode
 

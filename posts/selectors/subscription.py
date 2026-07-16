@@ -1,6 +1,8 @@
 
-
+# Django Built-in modules
 from django.db.models import QuerySet
+
+# Local Apps
 from posts.models import Subscription, UserSubscription
 
 

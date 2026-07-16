@@ -1,28 +1,19 @@
+# Third Party Packages# Local Apps
+import logging
 from rest_framework.request import Request
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from rest_framework.permissions import AllowAny
-
-from rest_framework_simplejwt.tokens import RefreshToken
-from django.db import transaction
-
 from drf_spectacular.utils import (
     extend_schema,
     OpenApiResponse,
 )
 
+# Local Apps
 from posts.selectors.category import get_all_categories
 from posts.selectors.list_posts import get_all_posts
 from posts.selectors.subscription import get_all_subscriptions
 from view_api.apps_api.home.home_serializer import HomeOutputSerializer
-from view_api.apps_api.users.profile.user_profile_serializer import ProfileOutputSerializer
-
-from users.services.user_services import register
-from users.selectors.user_selector import get_users_list
-
-import logging
-
 from view_api.renderers import CustomResponseRenderer
 from view_api.throttle import UserRequestThrottle
 

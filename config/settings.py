@@ -45,7 +45,7 @@ INSTALLED_APPS = [
     "ckeditor",
     "rest_framework",
     "drf_spectacular",
-    "django_elasticsearch_dsl",
+    "drf_error_handler",
     "mptt",
     'users',
     'posts',
@@ -184,7 +184,8 @@ REST_FRAMEWORK = {
     ),
     "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.PageNumberPagination",
     "PAGE_SIZE": 10,
-    "EXCEPTION_HANDLER": "view_api.exception_handler.custom_exception_handler",
+    "EXCEPTION_HANDLER": "drf_error_handler.handler.exception_handler",
+
 
 }
 SPECTACULAR_SETTINGS = {
@@ -225,10 +226,20 @@ SIMPLE_JWT = {
     "JTI_CLAIM": "jti",
 }
 
-ELASTICSEARCH_DSL = {
-    "default": {
-        "hosts": "http://localhost:9200",
-    },
+DRF_ERROR_HANDLER = {
+    "VALIDATION_ERROR_BUSINESS_STATUS_CODE": 1001,
+    "PARSE_ERROR_BUSINESS_STATUS_CODE": 1002,
+    "AUTHENTICATION_FAILED_BUSINESS_STATUS_CODE": 1003,
+    "NOT_AUTHENTICATION_BUSINESS_STATUS_CODE": 1004,
+    "PERMISSION_DENIED_BUSINESS_STATUS_CODE": 1005,
+    "NOT_FOUND_BUSINESS_STATUS_CODE": 1006,
+    "METHOD_NOT_ALLOWED_BUSINESS_STATUS_CODE": 1007,
+    "NOT_ACCEPTABLE_BUSINESS_STATUS_CODE": 1008,
+    "UNSUPPORTED_MEDIA_TYPE_BUSINESS_STATUS_CODE": 1009,
+    "THROTTLED_BUSINESS_STATUS_CODE": 1010,
+    "EXCEPTION_FORMATTER_CLASS": "utils.formatters.StatusExceptionFormatter",
 }
+
+ELASTICSEARCH_DSL = ...
 from config.logging import LOGGING
 

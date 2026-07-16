@@ -1,20 +1,16 @@
 
-
+# Third Party Packages
 from rest_framework.request import Request
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from rest_framework.permissions import AllowAny
-
-from rest_framework_simplejwt.tokens import RefreshToken
-from django.db import transaction
-
 from drf_spectacular.utils import (
     extend_schema,
     OpenApiResponse,
 )
+import logging
 
-from users.models import OtpCode
+# Local Apps
 from users.selectors.profile_selector import get_user_favorite_posts, get_user_subscription_detail
 from users.services.otp_services import create_otp_code
 from users.tasks import delete_otp_task, send_otp_task
@@ -24,11 +20,9 @@ from view_api.permissions import ProfilePermission
 from view_api.renderers import CustomResponseRenderer
 from view_api.throttle import AdminRequestThrottle, UserRequestThrottle
 from view_api.apps_api.users.user.users_serializer import UserInputSerializer, UserOutputModelSerializer
-
 from users.services.user_services import register
 from users.selectors.user_selector import get_users_list
 
-import logging
 
 logger = logging.getLogger(__name__)
 

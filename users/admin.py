@@ -1,13 +1,17 @@
+# Django Built-in modules   
 from django.contrib import admin
+from django.contrib.auth.admin import UserAdmin
 
+# Local Apps
 from .models import BaseUserModel, OtpCode, UserProfileModel
 
-from django.contrib.auth.admin import UserAdmin
+# Third Party Packages
+from unfold.admin import ModelAdmin
 
 
 
 @admin.register(BaseUserModel)
-class BaseUserAdmin(UserAdmin):
+class BaseUserAdmin(ModelAdmin, UserAdmin):
     list_display = (
         "id",
         "username",

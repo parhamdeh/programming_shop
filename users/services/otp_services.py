@@ -1,4 +1,7 @@
+# Local Apps
 from users.models import BaseUserModel, OtpCode
+
+# Third Party Packages
 from random import randint
 
 

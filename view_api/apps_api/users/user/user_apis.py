@@ -1,25 +1,25 @@
+# Third Party Packages
 from rest_framework.request import Request
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.permissions import IsAdminUser
-
+from rest_framework.settings import api_settings
+import logging
 from drf_spectacular.utils import (
     extend_schema,
     OpenApiResponse,
 )
 
+# Local Apps
 from view_api.renderers import CustomResponseRenderer
 from view_api.throttle import AdminRequestThrottle
 from view_api.apps_api.users.user.users_serializer import UserInputSerializer, UserOutputModelSerializer
-
 from users.services.user_services import register
 from users.selectors.user_selector import get_users_list
 
-import logging
 
 logger = logging.getLogger(__name__)
-from rest_framework.settings import api_settings
 
 
 class UserListCreate(APIView):

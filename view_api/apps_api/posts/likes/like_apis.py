@@ -1,29 +1,24 @@
+# Third Party Packages
 from rest_framework.request import Request
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
-
-
+from rest_framework.settings import api_settings
+import logging
 from drf_spectacular.utils import (
     extend_schema,
     OpenApiResponse,
 )
 
-from posts.selectors.list_posts import get_all_posts
+# Local Apps
 from posts.selectors.post_detail import get_list_post_liks
 from posts.services.post import create_favorit_post, create_post, delete_favorit_post
 from view_api.apps_api.posts.likes.like_serilizers import PostLiksOutputModelSerializer
-from view_api.apps_api.posts.post.post_serializers import PostOutputModelSerializer, PostsInputModelSerializer
-from view_api.permissions import PremiumPostPermission
 from view_api.renderers import CustomResponseRenderer
 from view_api.throttle import AdminRequestThrottle
-from view_api.apps_api.users.user.users_serializer import UserInputSerializer, UserOutputModelSerializer
 
-from users.services.user_services import register
-from users.selectors.user_selector import get_users_list
-from rest_framework.settings import api_settings
-import logging
+
 
 logger = logging.getLogger(__name__)
 

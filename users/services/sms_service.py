@@ -1,4 +1,7 @@
+# Local Apps
 from config import settings
+
+# Third Party Packages
 from kavenegar import KavenegarAPI
 
 

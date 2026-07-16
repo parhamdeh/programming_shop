@@ -1,5 +1,7 @@
+# Django Built-in modules
 from django.urls import path, include
 
+# Local Apps
 from view_api.apps_api.home.home_apis import HomeAPIview
 from view_api.apps_api.posts.category.post_categoy_apis import CategoryListCreateAPIView
 from view_api.apps_api.posts.comments.post_comment_apis import PostCommentListCreateAPIView
@@ -9,19 +11,22 @@ from view_api.apps_api.posts.post.id.post_id_apis import PostRetrieveUpdateDestr
 from view_api.apps_api.posts.post.post_apis import PostListCreateAPIView
 from view_api.apps_api.posts.subscription.id.subscription_id_apis import SubscriptionRetrieveUpdateDstroyAPIView
 from view_api.apps_api.posts.subscription.subscription_apis import SubscriptionListCreateAPIView
+from view_api.apps_api.users.authentication.login_api import CustomTokenObtainPairView
 from view_api.apps_api.users.authentication.register_user_apis import RegisterUserAPIView, VerifyOtpAPIView
 from view_api.apps_api.users.profile.user_profile_apis import ProfileAPIView
 from view_api.apps_api.users.user.id.user_id_apis import UserRetrieveUpdatadeDestroy
 from view_api.apps_api.users.user.user_apis import UserListCreate
-from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView, TokenVerifyView
-
 from view_api.apps_api.posts.category.id.category_id_apis import CategoryRetrieveUpdateDstroyAPIView
+
+# Third Party Packages
+from rest_framework_simplejwt.views import TokenRefreshView, TokenVerifyView
+
 
 
 app_name = "api"
 urlpatterns = [
     path("account/jwt/", include(([
-        path("login/", TokenObtainPairView.as_view(), name="login"),
+        path("login/", CustomTokenObtainPairView.as_view(), name="login"),
         path("refresh/", TokenRefreshView.as_view(), name="refresh"),
 
     ])), name="jwt"),

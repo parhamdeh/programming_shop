@@ -1,11 +1,14 @@
-
+# Local Apps
 from posts.models import Comments, Post
 from posts.models import FavoritPost
 from posts.selectors.subscription import get_user_subscription_with_user
 from users.models import BaseUserModel
-from django.core.exceptions import ObjectDoesNotExist
-from django.db.models import QuerySet
 from users.selectors.user_selector import get_user_by_id
+
+# Django Built-in modules
+from django.db.models import QuerySet
+
+# Third Party Packages
 from rest_framework.exceptions import NotFound
 
 

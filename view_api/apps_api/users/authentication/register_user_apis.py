@@ -1,30 +1,30 @@
+# Third Party Packages
+import logging
 from rest_framework.request import Request
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.permissions import AllowAny
-
 from rest_framework_simplejwt.tokens import RefreshToken
-from django.db import transaction
-
 from drf_spectacular.utils import (
     extend_schema,
     OpenApiResponse,
 )
 
+# Django Built-in modules
+from django.db import transaction
+
+# Local Apps
 from users.models import OtpCode
 from users.services.otp_services import create_otp_code
 from users.tasks import delete_otp_task, send_otp_task
 from view_api.apps_api.users.authentication.authentication_serializers import RefreshTokenOutputSerializer, RegisterInputSerializer, VerifyOtpSerializer
 from view_api.exceptions import OTPExpiredError
-
 from view_api.renderers import CustomResponseRenderer
 from view_api.throttle import UserRequestThrottle
-
 from users.services.user_services import register
 from users.selectors.user_selector import get_users_list
 
-import logging
 
 logger = logging.getLogger(__name__)
 
@@ -160,16 +160,18 @@ class VerifyOtpAPIView(APIView):
             "%s verified successfully.",
             user.username,
         )
+        output_data = {
+                "refresh": str(token),
+                "access": str(token.access_token),
+                "username" : user.username,
+                "phone" : user.phone,
+
+            }
         del request.session["register_data"]
 
         token = RefreshToken.for_user(user)
-        return Response(
-            data = RefreshTokenOutputSerializer(
-            {
-                "refresh": str(token),
-                "access": str(token.access_token),
-            }
-            ).data,
 
+        return Response(
+            data = RefreshTokenOutputSerializer(instance=output_data).data,
             status=status.HTTP_201_CREATED,
             )

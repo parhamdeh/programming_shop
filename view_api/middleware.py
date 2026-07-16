@@ -1,11 +1,12 @@
+# Third Party Packages
 import time
 import logging
 
-import logging
+# Django Built-in modules
+from django.utils.deprecation import MiddlewareMixin
 
 logger = logging.getLogger(__name__)
 
-from django.utils.deprecation import MiddlewareMixin
 
 
 class RequestLoggingMiddleware(MiddlewareMixin):

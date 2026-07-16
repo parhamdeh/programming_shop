@@ -1,4 +1,7 @@
+# Local Apps
 from users.models import BaseUserModel
+
+# Django Built-in modules
 from django.db.models import QuerySet
 
 

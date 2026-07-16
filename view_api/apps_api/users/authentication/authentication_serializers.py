@@ -1,3 +1,4 @@
+# Third Party Packages
 from rest_framework import serializers
 from phonenumber_field.serializerfields import PhoneNumberField
 
@@ -30,3 +31,7 @@ class VerifyOtpSerializer(serializers.Serializer):
 class RefreshTokenOutputSerializer(serializers.Serializer):
     refresh = serializers.CharField()
     access = serializers.CharField()
+    username = serializers.CharField()
+    phone = phone = PhoneNumberField(
+        region="IR",
+    )

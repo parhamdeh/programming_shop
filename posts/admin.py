@@ -1,6 +1,11 @@
+# Django Built-in modules
 from django.contrib import admin
-from mptt.admin import DraggableMPTTAdmin
 
+# Third Party Packages
+from mptt.admin import DraggableMPTTAdmin
+from unfold.admin import ModelAdmin
+
+# Local Apps
 from .models import (
     Post,
     Category,
@@ -11,7 +16,7 @@ from .models import (
 )
 
 @admin.register(Post)
-class PostAdmin(admin.ModelAdmin):
+class PostAdmin(ModelAdmin, admin.ModelAdmin):
     list_display = (
         "id",
         "title",
@@ -38,7 +43,7 @@ class PostAdmin(admin.ModelAdmin):
 
 
 @admin.register(Category)
-class CategoryAdmin(DraggableMPTTAdmin):
+class CategoryAdmin(ModelAdmin, DraggableMPTTAdmin):
     mptt_indent_field = "name"
 
     list_display_links = (

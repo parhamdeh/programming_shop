@@ -1,9 +1,12 @@
+# Local Apps
 from posts.models import Subscription
 from users.models import BaseUserModel, UserProfileModel
 from users.selectors.user_selector import get_user_by_id
 
+# Django Built-in modules
 from django.db import transaction
 
+# Third Party Packages
 from rest_framework.exceptions import NotFound
 
 
