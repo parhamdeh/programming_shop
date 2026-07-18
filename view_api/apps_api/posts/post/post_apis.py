@@ -84,6 +84,8 @@ class PostListCreateAPIView(ListCreateAPIView):
         except Exception as e:
             logger.exception(f"database error {e}")
             raise
+        
+        self.instance = post
 
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
