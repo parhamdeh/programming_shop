@@ -146,6 +146,9 @@ class UserProfileModel(BaseModel):
         verbose_name = _("پروفایل کاربر")
         verbose_name_plural = _("پروفایل کاربر")
 
+    def __str__(self):
+        return self.user.username 
+
 class OtpCode(BaseModel):
     phone = models.CharField(max_length=11, verbose_name=_("شماره تلفن"))
     code = models.CharField(max_length=6, verbose_name=_(" کد تایید"))
@@ -156,6 +159,9 @@ class OtpCode(BaseModel):
         ordering = ('-created_at',)
         verbose_name = _("کد تایید ")
         verbose_name_plural = _("کد تایید ")
+
+    def __str__(self):
+        return self.phone + ">>>>" + self.code
 
     def is_expired(self):
         return timezone.now() > self.created_at + timedelta(minutes=2)

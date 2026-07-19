@@ -54,6 +54,9 @@ class UserSubscription(BaseModel):
         verbose_name=_("اشتراک کاربر")
         verbose_name_plural = _("اشتراک کاربر")
 
+    def __str__(self):
+        return self.subscription + " for " + self.user.name
+
 
     @property
     def remaining_days(self):
@@ -118,6 +121,9 @@ class Comments(BaseModel):
         verbose_name=_("کامنت ها")
         verbose_name_plural = _("کامنت ها")
 
+    def __str__(self):
+        return self.author.username + "  added a comment for " + self.post.title 
+
 
 
 class FavoritPost(BaseModel):
@@ -129,5 +135,8 @@ class FavoritPost(BaseModel):
         unique_together = ("user", "post")
         verbose_name=_(" لایک ها")
         verbose_name_plural =_(" لایک ها")
+
+    def __str__(self):
+        return self.user.username + "  added a like for " + self.post.title
 
 

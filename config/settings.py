@@ -33,7 +33,6 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
-    'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
@@ -55,7 +54,9 @@ INSTALLED_APPS = [
     "unfold.contrib.simple_history",  # optional, if django-simple-history package is used
     "unfold.contrib.location_field",  # optional, if django-location-field package is used
     "unfold.contrib.constance",  # optional, if django-constance package is used
-    "unfold.contrib.hijack",  # optional, if django-hijack package is used
+    "unfold.contrib.hijack",
+    "crispy_forms",
+    'django.contrib.admin', # optional, if django-hijack package is used
     "mptt",
     'users',
     'posts',
@@ -145,14 +146,6 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/6.0/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
-
-TIME_ZONE = 'UTC'
-
-USE_I18N = True
-
-USE_TZ = True
-
 AUTH_USER_MODEL = "users.BaseUserModel"
 
 # Static files (CSS, JavaScript, Images)
@@ -160,8 +153,10 @@ AUTH_USER_MODEL = "users.BaseUserModel"
 MEDIA_URL = "/media/"
 
 MEDIA_ROOT = BASE_DIR / "media"
-STATIC_URL = 'static/'
-
+STATIC_URL = "static/"
+STATICFILES_DIRS = [
+    BASE_DIR / "static",
+]
 
 CELERY_ACCEPT_CONTENT = ["json"]
 CELERY_TASK_SERIALIZER = "json"
@@ -256,115 +251,98 @@ from django.urls import reverse_lazy
 from django.utils.translation import gettext_lazy as _
 
 UNFOLD = {
-    # -----------------------------
-    # Site
-    # -----------------------------
-    "SITE_TITLE": "پنل مدیریت",
-    "SITE_HEADER": "پنل مدیریت",
-    "SITE_SUBHEADER": "Django Administration",
+    "STYLES": [
+        lambda request: static("css/custom.css"),
+    ],
+    "SITE_TITLE": "فروش دوره های اموزشی",
+    "SITE_HEADER": "پنل ادمین",
     "SITE_URL": "/",
-    "SITE_SYMBOL": "dashboard",
-
-    # -----------------------------
-    # Logos
-    # -----------------------------
-    "SITE_LOGO": lambda request: static("images/logo.png"),
-    "SITE_ICON": lambda request: static("images/favicon.ico"),
-    "SITE_LOGO_DARK": lambda request: static("images/logo-dark.png"),
-
-    # -----------------------------
-    # Appearance
-    # -----------------------------
-    "SHOW_HISTORY": True,
-    "SHOW_VIEW_ON_SITE": True,
-    "SHOW_BACK_BUTTON": True,
-
-    # -----------------------------
-    # Theme
-    # -----------------------------
-    "THEME": "light",
-
-    # -----------------------------
-    # Colors
-    # -----------------------------
-    "COLORS": {
-        "primary": {
-            "50": "239 246 255",
-            "100": "219 234 254",
-            "200": "191 219 254",
-            "300": "147 197 253",
-            "400": "96 165 250",
-            "500": "59 130 246",
-            "600": "37 99 235",
-            "700": "29 78 216",
-            "800": "30 64 175",
-            "900": "30 58 138",
+    
+    "LOGO": {
+        "light": lambda request: static("logo/logo-light.svg"),
+        "dark": lambda request: static("logo/logo-dark.svg"),
+},
+    
+    # دراپ‌داون بالا
+    "SITE_DROPDOWN": [
+        {
+            "title": "بازگشت به سایت",
+            "link": "/",
         },
-    },
-
-    # -----------------------------
-    # Login
-    # -----------------------------
-    "LOGIN": {
-        "image": lambda request: static("images/login.jpg"),
-    },
-
-    # -----------------------------
-    # Sidebar
-    # -----------------------------
+        {
+            "title": "مستندات",
+            "link": "/api/docs/",
+        },
+    ],
+    
+    # ناوبری سایدبار
     "SIDEBAR": {
         "show_search": True,
         "show_all_applications": True,
         "navigation": [
             {
-                "title": _("Dashboard"),
-                "separator": True,
+                "title": "حساب کاربری",
+                "icon": "person",
                 "items": [
                     {
-                        "title": _("Home"),
-                        "icon": "home",
-                        "link": reverse_lazy("admin:index"),
+                        "title": "کاربران",
+                        "icon": "group",
+                        "link": "/admin/users/baseusermodel/",
+                        "permission": lambda request: request.user.is_superuser,
+                    },
+                    {
+                        "title": "کدهای OTP",
+                        "icon": "password",
+                        "link": "/admin/users/otpcode/",
+                        "permission": lambda request: request.user.is_staff,
+                    },
+                ],
+            },
+            {
+                "title": "محتوا",
+                "icon": "article",
+                "items": [
+                    {
+                        "title": "پست‌ها",
+                        "icon": "description",
+                        "link": "/admin/posts/post/",
+                    },
+                    {
+                        "title": "دسته‌بندی",
+                        "icon": "category",
+                        "link": "/admin/posts/category/",
+                    },
+                    {
+                        "title": "نظرات",
+                        "icon": "chat",
+                        "link": "/admin/posts/comments/",
+                    },
+                    {
+                        "title": "لایک‌ها",
+                        "icon": "favorite",
+                        "link": "/admin/posts/favoritpost/",
                     },
                 ],
             },
         ],
     },
-
-    # -----------------------------
-    # Tabs
-    # -----------------------------
-    "TABS": [],
-
-    # -----------------------------
-    # Styles
-    # -----------------------------
-    "STYLES": [
-        lambda request: static("css/admin.css"),
-    ],
-
-    # -----------------------------
-    # Scripts
-    # -----------------------------
-    "SCRIPTS": [
-        lambda request: static("js/admin.js"),
-    ],
-
-    # -----------------------------
-    # Breadcrumbs
-    # -----------------------------
-    "BREADCRUMBS": True,
-
-    # -----------------------------
-    # Environment
-    # -----------------------------
-    "ENVIRONMENT": "Development",
-
-    # -----------------------------
-    # Footer
-    # -----------------------------
-    "FOOTER": {
-        "copyright": "© 2026 Your Company",
-    },
+    
+    # رفتار UI
+    "SHOW_HISTORY": True,
+    "SHOW_VIEW_ON_SITE": True,
+    "SHOW_BACK_BUTTON": True, 
+    
 }
+
+LANGUAGE_CODE = "fa"
+
+TIME_ZONE = "Asia/Tehran"
+
+USE_I18N = True
+
+USE_TZ = True
+CRISPY_TEMPLATE_PACK = "unfold_crispy"
+
+CRISPY_ALLOWED_TEMPLATE_PACKS = ["unfold_crispy"]
 from config.logging import LOGGING
 
