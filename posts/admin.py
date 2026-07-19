@@ -1,6 +1,7 @@
 # Django Built-in modules
 from django.contrib import admin
 from django.utils.translation import gettext_lazy as _
+from django.utils.text import Truncator
 
 # Third Party Packages
 from mptt.admin import DraggableMPTTAdmin
@@ -18,6 +19,16 @@ from .models import (
     UserSubscription,
     FavoritPost,
 )
+
+
+
+@admin.action(description=_("تبدیل به پست ویژه"))
+def make_premium(modeladmin, request, queryset):
+    queryset.update(is_premium=True)
+
+@admin.action(description=_("لغو ویژه بودن"))
+def remove_premium(modeladmin, request, queryset):
+    queryset.update(is_premium=False)
 
 @admin.register(Post)
 class PostAdmin(ModelAdmin):
@@ -65,6 +76,7 @@ class PostAdmin(ModelAdmin):
 
     save_on_top = True
 
+
     list_per_page = 30
     fieldsets = (
         (_("نویسنده "), {
@@ -79,8 +91,23 @@ class PostAdmin(ModelAdmin):
             "classes": ("collapse",),
         }),
     )
+    actions = (
+        make_premium,
+        remove_premium,
+    )
 
-
+    @admin.display(description='', empty_value='_')
+    def display_truncate_post(self, obj):
+        return Truncator(obj.content).chars(50)
+    
+    @admin.display(
+    description="ویژه",
+    boolean=True,
+)
+    def premium_status(self, obj):
+        return obj.is_premium
+    
+    
 @admin.register(Category)
 class CategoryAdmin(ModelAdmin, DraggableMPTTAdmin):
     paginator = InfinitePaginator
@@ -124,6 +151,10 @@ class CategoryAdmin(ModelAdmin, DraggableMPTTAdmin):
         }),
     )
 
+    @admin.display(description='', empty_value='_')
+    def display_truncate_category(self, obj):
+        return Truncator(obj.name).chars(50)
+
 @admin.register(Comments)
 class CommentAdmin(ModelAdmin):
     paginator = InfinitePaginator
@@ -161,6 +192,10 @@ class CommentAdmin(ModelAdmin):
         }),
     )
 
+    @admin.display(description='', empty_value='_')
+    def display_truncate_comment(self, obj):
+        return Truncator(obj.content).chars(50)
+
 
 @admin.register(Subscription)
 class SubscriptionAdmin(ModelAdmin):
@@ -173,6 +208,7 @@ class SubscriptionAdmin(ModelAdmin):
         "limit_days",
         "created_at",
     )
+    
     fieldsets = (
         (_("نام"), {
             "fields": ("name",)
@@ -186,6 +222,10 @@ class SubscriptionAdmin(ModelAdmin):
             "classes": ("collapse",),
         }),
     )
+
+    @admin.display(description='', empty_value='_')
+    def display_truncate_subscription(self, obj):
+        return Truncator(obj.name).chars(50)
 
 
 @admin.register(UserSubscription)
@@ -209,6 +249,10 @@ class UserSubscriptionAdmin(ModelAdmin):
         }),
     )
 
+    @admin.display(description='', empty_value='_')
+    def display_truncate_user_subscription(self, obj):
+        return Truncator(obj.subscription.name).chars(50)
+
 
 @admin.register(FavoritPost)
 class FavoritPostAdmin(ModelAdmin):
@@ -227,6 +271,9 @@ class FavoritPostAdmin(ModelAdmin):
     ordering = (
         "-created_at",
     )
+    list_select_related = (
+    "user", "post",
+)
 
     fieldsets = (
         (_("نام"), {
@@ -241,3 +288,7 @@ class FavoritPostAdmin(ModelAdmin):
             "classes": ("collapse",),
         }),
     )
+
+    @admin.display(description='', empty_value='_')
+    def display_truncate_favorite_post(self, obj):
+        return Truncator(obj.post.title).chars(50)

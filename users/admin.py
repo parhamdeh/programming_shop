@@ -2,11 +2,12 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 from django.utils.translation import gettext_lazy as _
+from django.utils.text import Truncator
 from django.core.validators import EMPTY_VALUES
 
-from users.selectors.user_selector import get_users_list
 
 # Local Apps
+from users.selectors.user_selector import get_users_list
 from .models import BaseUserModel, OtpCode, UserProfileModel
 
 # Third Party Packages
@@ -43,6 +44,7 @@ class BaseUserAdmin(ModelAdmin, UserAdmin):
     list_display = (
         "id",
         "phone",
+        "username",
         "is_staff",
         "is_active",
     )
@@ -72,6 +74,9 @@ class BaseUserAdmin(ModelAdmin, UserAdmin):
         }),
     )
     
+    @admin.display(description='', empty_value='_')
+    def display_truncate_user(self, obj):
+        return Truncator(obj.username).chars(50)
 
 
 
