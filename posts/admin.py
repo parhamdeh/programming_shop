@@ -2,6 +2,7 @@
 from django.contrib import admin
 from django.utils.translation import gettext_lazy as _
 from django.utils.text import Truncator
+from django.utils.html import format_html
 
 # Third Party Packages
 from mptt.admin import DraggableMPTTAdmin
@@ -10,7 +11,7 @@ from unfold.admin import ModelAdmin
 
 
 # Local Apps
-from posts.admin_folder.forms import PostAdminForm
+# from posts.admin_folder.forms import PostAdminForm
 from .models import (
     Post,
     Category,
@@ -19,6 +20,8 @@ from .models import (
     UserSubscription,
     FavoritPost,
 )
+
+
 
 
 
@@ -33,7 +36,7 @@ def remove_premium(modeladmin, request, queryset):
 @admin.register(Post)
 class PostAdmin(ModelAdmin):
    
-    form = PostAdminForm
+    # form = PostAdminForm
     paginator = InfinitePaginator
     show_full_result_count = False
     list_display = (
@@ -42,8 +45,8 @@ class PostAdmin(ModelAdmin):
         "author",
         "category",
         "is_premium",
-        "image",
-        "video",
+        "image_preview",
+        "video_preview",
         "created_at",
     )
     
@@ -65,6 +68,8 @@ class PostAdmin(ModelAdmin):
 
     readonly_fields = (
         "created_at",
+        "image_preview",
+        "video_preview",
     )
 
     ordering = ("-created_at",)
@@ -83,12 +88,8 @@ class PostAdmin(ModelAdmin):
             "fields": ("author", )
         }),
         (_("محتوا"), {
-            "fields": ("title", "content", "image", "video", "is_premium", "category"),
+            "fields": ("title", "content", "video_preview", "image", "video", "is_premium", "category", ),
             "classes": ("collapse",),  
-        }),
-        (_("تاریخ‌ها"), {
-            "fields": ("created_at",),
-            "classes": ("collapse",),
         }),
     )
     actions = (
@@ -107,12 +108,38 @@ class PostAdmin(ModelAdmin):
     def premium_status(self, obj):
         return obj.is_premium
     
+    @admin.display(description="تصویر")
+    def image_preview(self, obj):
+        if obj.image:
+            return format_html(
+                '<img src="{}" style="width:90px;height:70px;object-fit:cover;border-radius:8px;" />',
+                obj.image.url,
+            )
+        return "-"
+    
+    @admin.display(description="ویدئو")
+    def video_preview(self, obj):
+        if not obj.video:
+            return "-"
+
+        return format_html(
+            """
+            <video width="220" controls preload="metadata">
+                <source src="{}" type="video/mp4">
+                مرورگر شما از ویدئو پشتیبانی نمی‌کند.
+            </video>
+            """,
+            obj.video.url,
+        )
     
 @admin.register(Category)
-class CategoryAdmin(ModelAdmin, DraggableMPTTAdmin):
+class CategoryAdmin(DraggableMPTTAdmin, ModelAdmin):
     paginator = InfinitePaginator
     show_full_result_count = False
     mptt_indent_field = "name"
+    readonly_fields = (
+    "created_at",
+    )
     
     list_display_links = (
         "indented_title",
@@ -128,7 +155,7 @@ class CategoryAdmin(ModelAdmin, DraggableMPTTAdmin):
 
 
     search_fields = (
-        "parent",
+        "parent__name",
         "name",
     )
 
@@ -144,10 +171,6 @@ class CategoryAdmin(ModelAdmin, DraggableMPTTAdmin):
         (_("محتوا"), {
             "fields": ("name",),
             "classes": ("collapse",),  
-        }),
-        (_("تاریخ‌ها"), {
-            "fields": ("created_at",),
-            "classes": ("collapse",),
         }),
     )
 
@@ -171,6 +194,9 @@ class CommentAdmin(ModelAdmin):
         "post",
         "author",
     )
+    readonly_fields = (
+    "created_at",
+)
 
     ordering = (
         "-created_at",
@@ -185,10 +211,6 @@ class CommentAdmin(ModelAdmin):
         (_("محتوا"), {
             "fields": ("post", "content"),
             "classes": ("collapse",),  
-        }),
-        (_("تاریخ‌ها"), {
-            "fields": ("created_at",),
-            "classes": ("collapse",),
         }),
     )
 
@@ -208,6 +230,9 @@ class SubscriptionAdmin(ModelAdmin):
         "limit_days",
         "created_at",
     )
+    readonly_fields = (
+    "created_at",
+)
     
     fieldsets = (
         (_("نام"), {
@@ -216,10 +241,6 @@ class SubscriptionAdmin(ModelAdmin):
         (_("محتوا"), {
             "fields": ("price", "limit_days",),
             "classes": ("collapse",), 
-        }),
-        (_("تاریخ‌ها"), {
-            "fields": ("created_at",),
-            "classes": ("collapse",),
         }),
     )
 
@@ -238,13 +259,16 @@ class UserSubscriptionAdmin(ModelAdmin):
         "subscription",
         "created_at",
     )
+    readonly_fields = (
+    "created_at",
+)
     list_select_related = ["user", "subscription"]
     fieldsets = (
         (_("محتوا"), {
             "fields": ("user", "subscription")
         }),
         (_("تاریخ‌ها"), {
-            "fields": ("created_at", "start_date", "end_date"),
+            "fields": ("start_date", "end_date"),
             "classes": ("collapse",),
         }),
     )
@@ -274,6 +298,9 @@ class FavoritPostAdmin(ModelAdmin):
     list_select_related = (
     "user", "post",
 )
+    readonly_fields = (
+    "created_at",
+)
 
     fieldsets = (
         (_("نام"), {
@@ -282,10 +309,6 @@ class FavoritPostAdmin(ModelAdmin):
         (_("محتوا"), {
             "fields": ("post", ),
             "classes": ("collapse",),  
-        }),
-        (_("تاریخ‌ها"), {
-            "fields": ("created_at",),
-            "classes": ("collapse",),
         }),
     )
 

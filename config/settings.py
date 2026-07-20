@@ -62,6 +62,7 @@ INSTALLED_APPS = [
     'posts',
     'home',
     "view_api",
+    "api_key",
 ]
 
 MIDDLEWARE = [
@@ -249,92 +250,211 @@ ELASTICSEARCH_DSL = ...
 from django.templatetags.static import static
 from django.urls import reverse_lazy
 from django.utils.translation import gettext_lazy as _
+from django.utils.translation import get_language_info
 
 UNFOLD = {
-    "STYLES": [
-        lambda request: static("css/custom.css"),
-    ],
-    "SITE_TITLE": "فروش دوره های اموزشی",
-    "SITE_HEADER": "پنل ادمین",
+
+    # ==========================
+    # General
+    # ==========================
+
+    "SITE_TITLE": "Programming Shop",
+    "SITE_HEADER": "Programming Shop",
+    "SITE_SYMBOL": "code",
     "SITE_URL": "/",
-    
+
+    # ==========================
+    # Logo
+    # ==========================
+
     "LOGO": {
         "light": lambda request: static("logo/logo-light.svg"),
         "dark": lambda request: static("logo/logo-dark.svg"),
-},
-    
-    # دراپ‌داون بالا
-    "SITE_DROPDOWN": [
+    },
+
+    "FAVICONS": [
         {
-            "title": "بازگشت به سایت",
-            "link": "/",
-        },
-        {
-            "title": "مستندات",
-            "link": "/api/docs/",
+            "rel": "icon",
+            "href": lambda request: static("logo/favicon.ico"),
         },
     ],
-    
-    # ناوبری سایدبار
+
+    # ==========================
+    # Custom css/js
+    # ==========================
+
+    "STYLES": [
+        lambda request: static("css/custom.css"),
+    ],
+
+    "SCRIPTS": [
+        lambda request: static("js/admin.js"),
+    ],
+    "COLORS": {
+        "primary": {
+            "light": "230 126 34",  # oklch برای روشن
+            "dark": "230 126 34",   # oklch برای تاریک
+        },
+        "accent": {
+            "light": "0 0 0",
+            "dark": "255 255 255",
+        },
+    },
+
+    # ==========================
+    # Sidebar
+    # ==========================
+
     "SIDEBAR": {
+
         "show_search": True,
-        "show_all_applications": True,
+        "show_all_applications": False,
+
         "navigation": [
+
             {
-                "title": "حساب کاربری",
-                "icon": "person",
+                "title": "کاربران",
+                "separator": True,
                 "items": [
+
                     {
                         "title": "کاربران",
                         "icon": "group",
-                        "link": "/admin/users/baseusermodel/",
-                        "permission": lambda request: request.user.is_superuser,
+                        "link": reverse_lazy("admin:users_baseusermodel_changelist"),
                     },
+
                     {
-                        "title": "کدهای OTP",
-                        "icon": "password",
-                        "link": "/admin/users/otpcode/",
-                        "permission": lambda request: request.user.is_staff,
+                        "title": "پروفایل کاربران",
+                        "icon": "badge",
+                        "link": reverse_lazy("admin:users_userprofilemodel_changelist"),
                     },
-                ],
+
+                    {
+                        "title": "OTP",
+                        "icon": "password",
+                        "link": reverse_lazy("admin:users_otpcode_changelist"),
+                    },
+
+                ]
             },
+
             {
-                "title": "محتوا",
-                "icon": "article",
+                "title": "وبلاگ",
+
+                "separator": True,
+
                 "items": [
+
                     {
                         "title": "پست‌ها",
-                        "icon": "description",
-                        "link": "/admin/posts/post/",
+                        "icon": "article",
+                        "link": reverse_lazy("admin:posts_post_changelist"),
                     },
+
                     {
-                        "title": "دسته‌بندی",
+                        "title": "دسته بندی",
                         "icon": "category",
-                        "link": "/admin/posts/category/",
+                        "link": reverse_lazy("admin:posts_category_changelist"),
                     },
+
                     {
                         "title": "نظرات",
                         "icon": "chat",
-                        "link": "/admin/posts/comments/",
+                        "link": reverse_lazy("admin:posts_comments_changelist"),
                     },
+
                     {
-                        "title": "لایک‌ها",
+                        "title": "علاقه مندی",
                         "icon": "favorite",
-                        "link": "/admin/posts/favoritpost/",
+                        "link": reverse_lazy("admin:posts_favoritpost_changelist"),
                     },
+
                 ],
             },
+
+            {
+                "title": "اشتراک",
+
+                "separator": True,
+
+                "items": [
+
+                    {
+                        "title": "پلن ها",
+                        "icon": "workspace_premium",
+                        "link": reverse_lazy("admin:posts_subscription_changelist"),
+                    },
+
+                    {
+                        "title": "اشتراک کاربران",
+                        "icon": "verified",
+                        "link": reverse_lazy("admin:posts_usersubscription_changelist"),
+                    },
+
+                ],
+            },
+
         ],
+
     },
-    
-    # رفتار UI
-    "SHOW_HISTORY": True,
+
+    # ==========================
+    # Header Dropdown
+    # ==========================
+    "LANGUAGES": {
+        # Hardcoded list of languages
+        "navigation": [
+            {
+                'bidi': False,
+                'code': 'fa',
+                'name': 'farsi',
+                'name_local':
+                'Deutsch',
+                'name_translated': 'farsi'
+            },
+        ],
+
+        # Using a callback to generate list of languages
+        # "navigation": "your_app.utils.languages_callback",
+
+        # In case you want to have some custom form handling
+        # "actions": reverse_lazy("custom_form_submit")
+    },
+
+    "SITE_DROPDOWN": [
+
+        {
+            "title": "🏠 سایت",
+            "link": "/",
+        },
+
+        {
+            "title": "📚 Swagger",
+            "link": "/api/docs/",
+        },
+
+    ],
+
+    # ==========================
+    # Admin
+    # ==========================
+
+    "SHOW_HISTORY": False,
+    "SHOW_BACK_BUTTON": True,
     "SHOW_VIEW_ON_SITE": True,
-    "SHOW_BACK_BUTTON": True, 
+    "THEME_SWITCHER": True,
+    "THEME": None,
     
+    "SHOW_LANGUAGES": True,
 }
 
+
+
 LANGUAGE_CODE = "fa"
+LANGUAGES = (
+    ("fa", _("farsi")),
+    ("en", _("English")),
+)
 
 TIME_ZONE = "Asia/Tehran"
 
