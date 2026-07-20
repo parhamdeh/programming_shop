@@ -1,20 +1,58 @@
 /* ===========================================================
    UNFOLD ADMIN THEME
-   Dark + Green
+   Green accent — Light + Dark mode
+   Dark mode activates when Unfold adds `.dark` to <html>
    =========================================================== */
 
 :root{
+    /* accent */
     --primary:#22c55e;
     --primary-hover:#16a34a;
+    --primary-soft:#22c55e22;
+    --primary-ring:rgba(34,197,94,.20);
 
+    /* light theme surfaces */
+    --bg:#f8fafc;
+    --bg-subtle:#f1f5f9;
+    --card:#ffffff;
+    --header:#ffffff;
+    --sidebar:#ffffff;
+
+    --border:#e2e8f0;
+    --border-strong:#cbd5e1;
+
+    --text:#0f172a;
+    --text-muted:#64748b;
+
+    --row-hover:#f1f5f9;
+    --input-bg:#ffffff;
+    --scrollbar-track:#e2e8f0;
+    --scrollbar-thumb:var(--primary);
+
+    --link:#16a34a;
+    --link-hover:#15803d;
+}
+
+.dark{
     --bg:#0f172a;
-    --bg-light:#111827;
+    --bg-subtle:#111827;
     --card:#1e293b;
+    --header:#111827;
+    --sidebar:#111827;
 
     --border:#334155;
+    --border-strong:#475569;
 
     --text:#f8fafc;
     --text-muted:#94a3b8;
+
+    --row-hover:#273449;
+    --input-bg:#0f172a;
+    --scrollbar-track:#111827;
+    --scrollbar-thumb:var(--primary);
+
+    --link:#4ade80;
+    --link-hover:#22c55e;
 }
 
 /* ===========================================================
@@ -25,6 +63,7 @@ html,
 body{
     background:var(--bg) !important;
     color:var(--text);
+    transition:background-color .15s ease, color .15s ease;
 }
 
 /* ===========================================================
@@ -32,21 +71,19 @@ body{
    =========================================================== */
 
 aside{
-    background:#111827 !important;
-    border-right:1px solid #1f2937;
+    background:var(--sidebar) !important;
+    border-right:1px solid var(--border);
 }
 
-/* active menu */
-
+/* active menu item */
 aside nav a[aria-current="page"]{
-    background:#22c55e22 !important;
-    color:#22c55e !important;
+    background:var(--primary-soft) !important;
+    color:var(--primary) !important;
 }
 
 /* hover */
-
 aside nav a:hover{
-    background:#1f2937 !important;
+    background:var(--bg-subtle) !important;
 }
 
 /* ===========================================================
@@ -54,8 +91,8 @@ aside nav a:hover{
    =========================================================== */
 
 header{
-    background:#111827 !important;
-    border-bottom:1px solid #1f2937 !important;
+    background:var(--header) !important;
+    border-bottom:1px solid var(--border) !important;
 }
 
 /* ===========================================================
@@ -65,8 +102,9 @@ header{
 .bg-base-50,
 .bg-base-100,
 .bg-white{
-    background:#1e293b !important;
-    border:1px solid #334155 !important;
+    background:var(--card) !important;
+    border:1px solid var(--border) !important;
+    color:var(--text);
 }
 
 /* ===========================================================
@@ -74,15 +112,20 @@ header{
    =========================================================== */
 
 table{
-    background:#1e293b !important;
+    background:var(--card) !important;
+    color:var(--text);
 }
 
 thead{
-    background:#111827 !important;
+    background:var(--bg-subtle) !important;
 }
 
 tbody tr:hover{
-    background:#273449 !important;
+    background:var(--row-hover) !important;
+}
+
+td, th{
+    border-color:var(--border) !important;
 }
 
 /* ===========================================================
@@ -92,22 +135,22 @@ tbody tr:hover{
 input,
 textarea,
 select{
-    background:#0f172a !important;
-    color:white !important;
-
-    border:1px solid #334155 !important;
-
+    background:var(--input-bg) !important;
+    color:var(--text) !important;
+    border:1px solid var(--border) !important;
     border-radius:8px;
+}
+
+input::placeholder,
+textarea::placeholder{
+    color:var(--text-muted);
 }
 
 input:focus,
 textarea:focus,
 select:focus{
-
-    border-color:#22c55e !important;
-
-    box-shadow:
-        0 0 0 3px rgba(34,197,94,.20) !important;
+    border-color:var(--primary) !important;
+    box-shadow:0 0 0 3px var(--primary-ring) !important;
 }
 
 /* ===========================================================
@@ -117,23 +160,26 @@ select:focus{
 button,
 .button,
 input[type=submit]{
-
-    background:#22c55e !important;
-
-    color:white !important;
-
+    background:var(--primary) !important;
+    color:#ffffff !important;
     border:none !important;
-
     border-radius:8px;
-
     transition:.2s;
 }
 
 button:hover,
 .button:hover,
 input[type=submit]:hover{
+    background:var(--primary-hover) !important;
+}
 
-    background:#16a34a !important;
+/* secondary / outline buttons, common in Unfold */
+.button-secondary,
+button.bg-white,
+button.bg-base-100{
+    background:var(--card) !important;
+    color:var(--text) !important;
+    border:1px solid var(--border-strong) !important;
 }
 
 /* ===========================================================
@@ -141,13 +187,11 @@ input[type=submit]:hover{
    =========================================================== */
 
 a{
-
-    color:#4ade80;
+    color:var(--link);
 }
 
 a:hover{
-
-    color:#22c55e;
+    color:var(--link-hover);
 }
 
 /* ===========================================================
@@ -155,7 +199,6 @@ a:hover{
    =========================================================== */
 
 .rounded-full{
-
     border-radius:999px !important;
 }
 
@@ -164,19 +207,15 @@ a:hover{
    =========================================================== */
 
 ::-webkit-scrollbar{
-
     width:10px;
 }
 
 ::-webkit-scrollbar-track{
-
-    background:#111827;
+    background:var(--scrollbar-track);
 }
 
 ::-webkit-scrollbar-thumb{
-
-    background:#22c55e;
-
+    background:var(--scrollbar-thumb);
     border-radius:20px;
 }
 
@@ -185,10 +224,9 @@ a:hover{
    =========================================================== */
 
 .ck-editor__editable{
-
-    background:#0f172a !important;
-
-    color:white !important;
+    background:var(--input-bg) !important;
+    color:var(--text) !important;
+    border-color:var(--border) !important;
 }
 
 /* ===========================================================
@@ -196,8 +234,8 @@ a:hover{
    =========================================================== */
 
 input[type=file]{
-
     padding:8px;
+    color:var(--text);
 }
 
 /* ===========================================================
@@ -205,15 +243,15 @@ input[type=file]{
    =========================================================== */
 
 .pagination a{
-
-    background:#1e293b;
-
-    color:white;
+    background:var(--card);
+    color:var(--text);
+    border:1px solid var(--border);
 }
 
 .pagination .active{
-
-    background:#22c55e !important;
+    background:var(--primary) !important;
+    color:#ffffff !important;
+    border-color:var(--primary) !important;
 }
 
 /* ===========================================================
@@ -221,8 +259,7 @@ input[type=file]{
    =========================================================== */
 
 input[type=search]{
-
-    background:#0f172a !important;
+    background:var(--input-bg) !important;
 }
 
 /* ===========================================================
@@ -230,10 +267,7 @@ input[type=search]{
    =========================================================== */
 
 @media(max-width:768px){
-
     table{
-
         overflow:auto;
     }
-
 }

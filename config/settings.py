@@ -68,6 +68,7 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'django.middleware.locale.LocaleMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -246,6 +247,9 @@ DRF_ERROR_HANDLER = {
     "EXCEPTION_FORMATTER_CLASS": "utils.formatters.StatusExceptionFormatter",
 }
 
+LOCALE_PATHS = [
+    BASE_DIR / "locale",
+]
 ELASTICSEARCH_DSL = ...
 from django.templatetags.static import static
 from django.urls import reverse_lazy
@@ -401,25 +405,40 @@ UNFOLD = {
     # ==========================
     # Header Dropdown
     # ==========================
-    "LANGUAGES": {
-        # Hardcoded list of languages
-        "navigation": [
-            {
-                'bidi': False,
-                'code': 'fa',
-                'name': 'farsi',
-                'name_local':
-                'Deutsch',
-                'name_translated': 'farsi'
-            },
-        ],
 
+    # Language selector - left empty so Unfold auto-detects both
+    # languages ("fa" and "en") from the LANGUAGES setting below.
+    # If you want custom local names/flags instead of auto-detection,
+    # see the commented block further down.
+    "LANGUAGES": {
         # Using a callback to generate list of languages
         # "navigation": "your_app.utils.languages_callback",
 
         # In case you want to have some custom form handling
         # "actions": reverse_lazy("custom_form_submit")
     },
+
+    # Uncomment this instead of the block above if you want explicit
+    # control over how each language is labeled in the switcher:
+    #
+    # "LANGUAGES": {
+    #     "navigation": [
+    #         {
+    #             "bidi": False,
+    #             "code": "fa",
+    #             "name": "Persian",
+    #             "name_local": "فارسی",
+    #             "name_translated": "Farsi",
+    #         },
+    #         {
+    #             "bidi": False,
+    #             "code": "en",
+    #             "name": "English",
+    #             "name_local": "English",
+    #             "name_translated": "English",
+    #         },
+    #     ],
+    # },
 
     "SITE_DROPDOWN": [
 
@@ -434,6 +453,54 @@ UNFOLD = {
         },
 
     ],
+    "TABS": [
+    # تب‌ناوبری برای بخش وبلاگ: وقتی یکی از این ۴ مدل رو باز می‌کنی
+    # این تب‌ها بالای صفحه‌ی تغییرات نشون داده میشن
+    {
+        "models": [
+            {"name": "posts.post", "detail": True},
+            {"name": "posts.category", "detail": True},
+            {"name": "posts.comments", "detail": True},
+            {"name": "posts.favoritpost", "detail": True},
+        ],
+        "items": [
+            {
+                "title": _("پست‌ها"),
+                "link": reverse_lazy("admin:posts_post_changelist"),
+            },
+            {
+                "title": _("دسته‌بندی"),
+                "link": reverse_lazy("admin:posts_category_changelist"),
+            },
+            {
+                "title": _("نظرات"),
+                "link": reverse_lazy("admin:posts_comments_changelist"),
+            },
+            {
+                "title": _("لایک‌ها"),
+                "link": reverse_lazy("admin:posts_favoritpost_changelist"),
+            },
+        ],
+    },
+
+    # تب‌ناوبری برای بخش اشتراک
+    {
+        "models": [
+            {"name": "posts.subscription", "detail": True},
+            {"name": "posts.usersubscription", "detail": True},
+        ],
+        "items": [
+            {
+                "title": _("پلن‌های اشتراک"),
+                "link": reverse_lazy("admin:posts_subscription_changelist"),
+            },
+            {
+                "title": _("اشتراک کاربران"),
+                "link": reverse_lazy("admin:posts_usersubscription_changelist"),
+            },
+        ],
+    },
+],
 
     # ==========================
     # Admin
@@ -465,4 +532,3 @@ CRISPY_TEMPLATE_PACK = "unfold_crispy"
 
 CRISPY_ALLOWED_TEMPLATE_PACKS = ["unfold_crispy"]
 from config.logging import LOGGING
-

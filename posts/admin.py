@@ -11,7 +11,7 @@ from unfold.admin import ModelAdmin
 
 
 # Local Apps
-# from posts.admin_folder.forms import PostAdminForm
+from posts.forms.admin_form import PostForm
 from .models import (
     Post,
     Category,
@@ -36,7 +36,7 @@ def remove_premium(modeladmin, request, queryset):
 @admin.register(Post)
 class PostAdmin(ModelAdmin):
    
-    # form = PostAdminForm
+    form = PostForm
     paginator = InfinitePaginator
     show_full_result_count = False
     list_display = (
@@ -84,12 +84,12 @@ class PostAdmin(ModelAdmin):
 
     list_per_page = 30
     fieldsets = (
-        (_("نویسنده "), {
-            "fields": ("author", )
+        (_("اطلاعات اصلی "), {
+            "fields": ("author", "category", "is_premium",)
         }),
         (_("محتوا"), {
-            "fields": ("title", "content", "video_preview", "image", "video", "is_premium", "category", ),
-            "classes": ("collapse",),  
+            "fields": ("title", "content", "video_preview", "image", "video", ),
+            "classes": ("tab",),  
         }),
     )
     actions = (
@@ -170,7 +170,7 @@ class CategoryAdmin(DraggableMPTTAdmin, ModelAdmin):
         }),
         (_("محتوا"), {
             "fields": ("name",),
-            "classes": ("collapse",),  
+            "classes": ("tab",),  
         }),
     )
 
@@ -210,7 +210,7 @@ class CommentAdmin(ModelAdmin):
         }),
         (_("محتوا"), {
             "fields": ("post", "content"),
-            "classes": ("collapse",),  
+            "classes": ("tab",),  
         }),
     )
 
@@ -240,7 +240,7 @@ class SubscriptionAdmin(ModelAdmin):
         }),
         (_("محتوا"), {
             "fields": ("price", "limit_days",),
-            "classes": ("collapse",), 
+            "classes": ("tab",), 
         }),
     )
 
@@ -269,7 +269,7 @@ class UserSubscriptionAdmin(ModelAdmin):
         }),
         (_("تاریخ‌ها"), {
             "fields": ("start_date", "end_date"),
-            "classes": ("collapse",),
+            "classes": ("tab",),
         }),
     )
 
@@ -308,7 +308,7 @@ class FavoritPostAdmin(ModelAdmin):
         }),
         (_("محتوا"), {
             "fields": ("post", ),
-            "classes": ("collapse",),  
+            "classes": ("tab",),  
         }),
     )
 
