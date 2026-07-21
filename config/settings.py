@@ -34,6 +34,7 @@ ALLOWED_HOSTS = []
 
 INSTALLED_APPS = [
     'django.contrib.auth',
+    "unfold",  # before django.contrib.admin
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
@@ -45,7 +46,6 @@ INSTALLED_APPS = [
     "rest_framework",
     "drf_spectacular",
     "drf_error_handler",
-    "unfold",  # before django.contrib.admin
     "unfold.contrib.filters",  # optional, if special filters are needed
     "unfold.contrib.forms",  # optional, if special form elements are needed
     "unfold.contrib.inlines",  # optional, if special inlines are needed
@@ -257,6 +257,13 @@ from django.utils.translation import gettext_lazy as _
 from django.utils.translation import get_language_info
 
 UNFOLD = {
+    "LOGIN": {
+        
+        # "image": lambda request: static("sample/login-bg.jpg"),
+        "redirect_after": lambda request: reverse_lazy("admin:index"),
+        # Inherits from `unfold.forms.AuthenticationForm`
+        # "form": "users.forms.user_form.LoginForm",
+    },
 
     # ==========================
     # General
@@ -272,14 +279,14 @@ UNFOLD = {
     # ==========================
 
     "LOGO": {
-        "light": lambda request: static("logo/logo-light.svg"),
-        "dark": lambda request: static("logo/logo-dark.svg"),
+        "light": lambda request: static("sample/login-bg.svg"),
+        "dark": lambda request: static("sample/login-bg.svg"),
     },
 
     "FAVICONS": [
         {
             "rel": "icon",
-            "href": lambda request: static("logo/favicon.ico"),
+            "href": lambda request: static("sample/login-bg.svg"),
         },
     ],
 
@@ -295,15 +302,15 @@ UNFOLD = {
         lambda request: static("js/admin.js"),
     ],
     "COLORS": {
-        "primary": {
-            "light": "230 126 34",  # oklch برای روشن
-            "dark": "230 126 34",   # oklch برای تاریک
-        },
-        "accent": {
-            "light": "0 0 0",
-            "dark": "255 255 255",
-        },
+    "primary": {
+        "light": "59 130 246",   # Blue-500
+        "dark": "96 165 250",    # Blue-400
     },
+    "accent": {
+        "light": "107 114 128",  # Gray-500
+        "dark": "156 163 175",   # Gray-400
+    },
+},
 
     # ==========================
     # Sidebar
@@ -405,40 +412,32 @@ UNFOLD = {
     # ==========================
     # Header Dropdown
     # ==========================
-
     # Language selector - left empty so Unfold auto-detects both
     # languages ("fa" and "en") from the LANGUAGES setting below.
     # If you want custom local names/flags instead of auto-detection,
     # see the commented block further down.
-    "LANGUAGES": {
-        # Using a callback to generate list of languages
-        # "navigation": "your_app.utils.languages_callback",
-
-        # In case you want to have some custom form handling
-        # "actions": reverse_lazy("custom_form_submit")
-    },
+    
 
     # Uncomment this instead of the block above if you want explicit
     # control over how each language is labeled in the switcher:
-    #
-    # "LANGUAGES": {
-    #     "navigation": [
-    #         {
-    #             "bidi": False,
-    #             "code": "fa",
-    #             "name": "Persian",
-    #             "name_local": "فارسی",
-    #             "name_translated": "Farsi",
-    #         },
-    #         {
-    #             "bidi": False,
-    #             "code": "en",
-    #             "name": "English",
-    #             "name_local": "English",
-    #             "name_translated": "English",
-    #         },
-    #     ],
-    # },
+    "LANGUAGES" : {
+        "navigation": [
+            {
+                "bidi": False,
+                "code": "fa",
+                "name": "Persian",
+                "name_local": "فارسی",
+                "name_translated": "Farsi",
+            },
+            {
+                "bidi": False,
+                "code": "en",
+                "name": "English",
+                "name_local": "English",
+                "name_translated": "English",
+            },
+        ],
+        },
 
     "SITE_DROPDOWN": [
 
@@ -451,6 +450,7 @@ UNFOLD = {
             "title": "📚 Swagger",
             "link": "/api/docs/",
         },
+        
 
     ],
     "TABS": [

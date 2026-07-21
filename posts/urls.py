@@ -1,4 +1,7 @@
+# django built in 
 from django.urls import path
+
+# local apps
 from posts.views.category_create_view import CreateCategory
 from posts.views.post_create_view import CreatePost
 from posts.views.posts_view import DeleteCommetntView, DeleteFavorit, PostDetailView, PostFavoritView

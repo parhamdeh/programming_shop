@@ -1,0 +1,58 @@
+{% extends "unfold/layouts/base.html" %}
+{% load i18n static %}
+
+
+{% block content %}
+<div class="max-w-md mx-auto">
+
+    <!-- Logo -->
+    <div class="text-center mb-8">
+        <img
+            src="{% static 'sample/login-bg.jpg' %}"
+            alt="Logo"
+            class="mx-auto h-24 w-auto"
+        >
+
+        <h1 class="mt-6 text-3xl font-bold">
+            پنل مدیریت
+        </h1>
+
+        <p class="mt-2 text-base-500">
+            برای ورود اطلاعات خود را وارد کنید
+        </p>
+    </div>
+
+    <div class="bg-white dark:bg-base-900 rounded-xl shadow-lg p-8">
+
+        <form method="post">
+            {% csrf_token %}
+
+            {% for field in form %}
+                <div class="mb-5">
+                    <label class="block mb-2 font-medium">
+                        {{ field.label }}
+                    </label>
+
+                    {{ field }}
+
+                    {% if field.errors %}
+                        <div class="text-red-600 text-sm mt-1">
+                            {{ field.errors }}
+                        </div>
+                    {% endif %}
+                </div>
+            {% endfor %}
+
+            <button
+                type="submit"
+                class="w-full rounded-lg py-3 bg-blue-600 hover:bg-blue-700 text-white transition"
+            >
+                ورود به پنل
+            </button>
+
+        </form>
+
+    </div>
+
+</div>
+{% endblock %}

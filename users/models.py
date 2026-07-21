@@ -85,6 +85,7 @@ class BaseUserModel(BaseModel, AbstractBaseUser, PermissionsMixin):
         verbose_name = _("کاربر")
         verbose_name_plural = _("کاربر")
 
+
     def __str__(self):
         return self.username
 

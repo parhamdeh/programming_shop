@@ -1,6 +1,5 @@
 # Third Party Packages
 import logging
-from poplib import CR
 from typing import Any
 from rest_framework.request import Request
 from rest_framework.generics import GenericAPIView, CreateAPIView

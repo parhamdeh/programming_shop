@@ -6,55 +6,54 @@
 
 :root{
     /* accent */
-    --primary:#22c55e;
-    --primary-hover:#16a34a;
-    --primary-soft:#22c55e22;
-    --primary-ring:rgba(34,197,94,.20);
+    --primary:#2563eb;
+    --primary-hover:#1d4ed8;
+    --primary-soft:#2563eb22;
+    --primary-ring:rgba(37,99,235,.20);
 
-    /* light theme surfaces */
+    /* light */
     --bg:#f8fafc;
     --bg-subtle:#f1f5f9;
     --card:#ffffff;
     --header:#ffffff;
     --sidebar:#ffffff;
 
-    --border:#e2e8f0;
-    --border-strong:#cbd5e1;
+    --border:#e5e7eb;
+    --border-strong:#d1d5db;
 
-    --text:#0f172a;
-    --text-muted:#64748b;
+    --text:#111827;
+    --text-muted:#6b7280;
 
-    --row-hover:#f1f5f9;
+    --row-hover:#f3f4f6;
     --input-bg:#ffffff;
-    --scrollbar-track:#e2e8f0;
-    --scrollbar-thumb:var(--primary);
+    --scrollbar-track:#e5e7eb;
+    --scrollbar-thumb:#9ca3af;
 
-    --link:#16a34a;
-    --link-hover:#15803d;
+    --link:#2563eb;
+    --link-hover:#1d4ed8;
 }
 
 .dark{
-    --bg:#0f172a;
-    --bg-subtle:#111827;
-    --card:#1e293b;
+    --bg:#111827;
+    --bg-subtle:#1f2937;
+    --card:#1f2937;
     --header:#111827;
     --sidebar:#111827;
 
-    --border:#334155;
-    --border-strong:#475569;
+    --border:#374151;
+    --border-strong:#4b5563;
 
-    --text:#f8fafc;
-    --text-muted:#94a3b8;
+    --text:#f9fafb;
+    --text-muted:#9ca3af;
 
-    --row-hover:#273449;
-    --input-bg:#0f172a;
-    --scrollbar-track:#111827;
-    --scrollbar-thumb:var(--primary);
+    --row-hover:#374151;
+    --input-bg:#111827;
+    --scrollbar-track:#1f2937;
+    --scrollbar-thumb:#6b7280;
 
-    --link:#4ade80;
-    --link-hover:#22c55e;
+    --link:#60a5fa;
+    --link-hover:#93c5fd;
 }
-
 /* ===========================================================
    BODY
    =========================================================== */
@@ -271,3 +270,64 @@ input[type=search]{
         overflow:auto;
     }
 }
+
+
+/* ===========================
+   TEXT COLORS
+   =========================== */
+
+body,
+p,
+span,
+label,
+small,
+strong,
+th,
+td,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6{
+    color: var(--text) !important;
+}
+
+.text-base-900,
+.text-base-800,
+.text-base-700,
+.text-base-600,
+.text-base-500{
+    color: var(--text) !important;
+}
+
+.dark .text-base-100,
+.dark .text-base-200,
+.dark .text-base-300,
+.dark .text-base-400,
+.dark .text-base-500{
+    color: var(--text) !important;
+}
+
+.text-font-default,
+.text-font-important,
+.text-font-subtle,
+.dark .text-font-default,
+.dark .text-font-important,
+.dark .text-font-subtle{
+    color: var(--text) !important;
+}
+
+a{
+    color: var(--text) !important;
+}
+
+a:hover{
+    color: var(--primary) !important;
+}
+
+/* form img,
+img[alt="Logo"]{
+    max-height: 80px !important;
+    width: auto !important; */
+/* } */
